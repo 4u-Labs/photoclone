@@ -1,0 +1,22 @@
+{
+	"name": "PhotoClone Pro",
+	"short_name": "PhotoClone",
+	"start_url": "./",
+	"display": "standalone",
+	"orientation": "any",
+	"background_color": "#1a1e21",
+	"theme_color": "#1a1e21",
+	"description": "PhotoClone Pro é um editor de imagens online gratuito com IA.",
+	"icons": [
+		{
+			"src": "images/manifest/192x192.png",
+			"sizes": "192x192",
+			"type": "image/png"
+		},
+		{
+			"src": "images/manifest/512x512.png",
+			"sizes": "512x512",
+			"type": "image/png"
+		}
+	]
+}
