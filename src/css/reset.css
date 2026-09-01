@@ -1,0 +1,247 @@
+:root {
+	/* Premium Dark Theme (Default) */
+	--background: #0f172a;
+	--text-color: #f1f5f9;
+	--text-color-muted: #94a3b8;
+	--text-color-red: #ef4444;
+	--text-color-green: #22c55e;
+	--text-color-blue: #3b82f6;
+	--link-color: #38bdf8;
+	--section-background-color: rgba(30, 41, 59, 0.6);
+	--area-background-color: rgba(30, 41, 59, 0.4);
+	--block-background-color: rgba(30, 41, 59, 0.5);
+	--header-background-color: rgba(15, 23, 42, 0.8);
+	--button-background-color: #1e293b;
+	--button-background-color-hover: #334155;
+	--button-background-color-active: #38bdf8;
+	--button-shadow-color: rgba(0, 0, 0, 0.4);
+	--button-text-color-active: #ffffff;
+	--button-border-radius: 6px;
+	--button-toggle-background-color: #334155;
+	--button-toggle-background-color-hover: #475569;
+	--input-background-color: #1e293b;
+	--input-background-color-hover: #334155;
+	--input-text-color: #f1f5f9;
+	--input-border-color: #334155;
+	--input-border-color-active: #38bdf8;
+	--input-border-radius: 6px;
+	--input-group-border-color: #334155;
+	--menu-background-color: rgba(15, 23, 42, 0.9);
+	--menu-icons-filter: invert(1);
+	--menu-icons-filter-active: none;
+	--menu-text-color: #cbd5e1;
+	--number-input-arrow-width: 2rem;
+	--background-color-active: #38bdf8;
+	--background-color-hover: rgba(255, 255, 255, 0.1);
+	--text-color-active: #ffffff;
+	--border-color: rgba(255, 255, 255, 0.1);
+	--scrollbar-track-color: #0f172a;
+	--scrollbar-thumb-color: #334155;
+	--mobile-menu-toggle-filter: invert(1);
+	--canvas-bg: #2c3749;
+	
+	/* Glassmorphism */
+	--glass-bg: rgba(30, 41, 59, 0.7);
+	--glass-border: rgba(255, 255, 255, 0.1);
+	--glass-blur: blur(12px);
+}
+body.theme-light{
+	/* light */
+	--background: #f9f9fa;
+	--text-color: #0c0c0d;
+	--text-color-muted: #444444;
+	--text-color-red: #bb2424;
+	--text-color-green: #2b882b;
+	--text-color-blue: #5454ca;
+	--link-color: #000080;
+	--section-background-color: #eaeaea;
+	--area-background-color: #d9d9d9;
+	--block-background-color: #eaeaea;
+	--header-background-color: #dbdbdb;
+	--button-background-color: #f9f9fa;
+	--button-background-color-hover: #ddd;
+	--button-background-color-active: #f3f3f3;
+	--button-text-color-active: #59aed8;
+	--button-shadow-color: rgba(0, 0, 0, 0.1);
+	--button-toggle-background-color: #b7b7b7;
+	--button-toggle-background-color-hover: #b7b7b7;
+	--input-background-color: #ffffff;
+	--input-background-color-hover: #ddd;
+	--input-text-color: #0c0c0d;
+	--input-border-color: #ccc;
+	--input-border-color-active: #59aed8;
+	--input-group-border-color: #c4c4c4;
+	--menu-background-color: #eaeaea;
+	--menu-icons-filter: none;
+	--menu-icons-filter-active: invert(1);
+	--menu-text-color: #333333;
+	--menu-dropdown-hover-background-color: #a3dbf7;
+	--menu-dropdown-border-color: #15439b;
+	--background-color-active: #a3dbf7;
+	--background-color-hover: #c4c4c4;
+	--text-color-active: #15439b;
+	--border-color: #c1c1c1;
+	--scrollbar-track-color: #f9f9fa;
+	--scrollbar-thumb-color: #919090;
+	--mobile-menu-toggle-filter: none;
+	--canvas-bg: #e2e8f0;
+}
+body.theme-green{
+	/* green */
+	--background: #050702;
+	--text-color: #acc3a9;
+	--text-color-muted: #80937d;
+	--link-color: #9ffda5;
+	--section-background-color: #1c2e04;
+	--area-background-color: #3b5f11;
+	--block-background-color: #3b5f11;
+	--header-background-color: #2b460f;
+	--button-background-color: #2e4a0d;
+	--button-background-color-hover: #58960e;
+	--button-background-color-active:#2b460f;
+	--button-text-color-active: #ccc;
+	--button-toggle-background-color: #243e05;
+	--button-toggle-background-color-hover: #243e05;
+	--input-background-color: #ffffff;
+	--input-background-color-hover: #ddd;
+	--input-text-color: #0c0c0d;
+	--input-border-color: #ccc;
+	--menu-background-color: #1c2e04;
+	--menu-icons-filter: invert(1);
+	--menu-icons-filter-active: none;
+	--menu-text-color: #acc3a9;
+	--background-color-active: #58960e;
+	--background-color-hover: #58960e;
+	--text-color-active: #acc3a9;
+	--border-color: #4d6b1e;
+	--scrollbar-track-color: #050702;
+	--scrollbar-thumb-color: #80937d;
+	--mobile-menu-toggle-filter: invert(1);
+	--canvas-bg: #142203;
+}
+
+*{
+	box-sizing: border-box;
+	background-repeat: no-repeat;
+}
+html {
+	font-size: 10px; /* Base is 10px for easy REM calculation */
+}
+body{
+	margin: 0;
+	padding: 30px 0 0 0;
+	background-color: #0f172a;
+	background: var(--background);
+	font-size: 1.3rem;
+	font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+	color: var(--text-color);
+	line-height: 1.5;
+	font-weight: normal;
+	overflow: hidden;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+canvas{
+	outline: none;
+	/* disable select canvas */
+	-webkit-touch-callout: none;
+	-ms-user-select: none;
+	-webkit-user-select: none;
+	user-select: none;
+}
+img{
+	border: none;
+}
+td, th{
+	vertical-align:top;
+}
+table{
+	border: 0;
+	margin: 0;
+	padding: 0;
+	vertical-align: baseline;
+	border-collapse: collapse;
+	border-spacing: 0;
+	width:100%;
+}
+hr{
+	border-color: rgba(0,0,0,0.3);
+	border-bottom: 0;
+}
+input[type="text"], select, input[type="number"], textarea{
+	background: var(--input-background-color);
+	border: 1px solid var(--input-border-color);
+	border-radius: var(--input-border-radius);
+	color: var(--input-text-color);
+	padding: 3px 5px;
+	font-size: 13px;
+}
+input:disabled {
+	opacity: 0.3;
+}
+select{
+	padding: 2px 4px;
+}
+input[type="range"]{
+	margin-left: 0;
+	width:100%;
+}
+button, input[type="button"]{
+	border-radius: var(--button-border-radius);
+	box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+	cursor: pointer;
+	border: 1px solid var(--border-color);
+	background-color: var(--button-background-color);
+	color: var(--text-color);
+	transition: all 0.2s ease;
+	outline: none;
+}
+button:hover, input[type="button"]:hover{
+	background-color: var(--button-background-color-hover);
+	transform: translateY(-1px);
+	box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+button:active, input[type="button"]:active{
+	transform: translateY(0);
+}
+button:disabled, input[type="button"]:disabled{
+	opacity: 0.5;
+	cursor: not-allowed;
+	transform: none;
+}
+button[aria-pressed="true"], input[type="button"][aria-pressed="true"]{
+	background-color: var(--button-background-color-active);
+	color: var(--button-text-color-active);
+	border-color: var(--button-background-color-active);
+}
+button[aria-pressed="true"]:hover, input[type="button"][aria-pressed="true"]:hover{
+	background-color: var(--button-background-color-active);
+	filter: brightness(1.1);
+}
+label{
+	display: inline-block;
+	vertical-align: top;
+	margin-top: 7px;
+}
+::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+}
+::-webkit-scrollbar-track-piece {
+    background: rgba(0,0,0,0.3);
+}
+::-webkit-scrollbar-thumb {
+    background: rgba(0,0,0,0.6);
+}
+@supports (zoom:2) {
+	input[type="radio"],  input[type=checkbox]{
+		zoom: 1.5;
+	}
+}
+@supports not (zoom:2) {
+	input[type="radio"],  input[type=checkbox]{
+		transform: scale(1.5);
+		transform-origin: left center;
+		margin: 8px 12px 8px 0;
+	}
+}
