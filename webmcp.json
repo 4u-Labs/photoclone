@@ -1,0 +1,57 @@
+{
+	"name": "PhotoClone Pro",
+	"description": "Editor de imagens profissional com Inteligência Artificial",
+	"version": "1.0.0",
+	"author": "4U.IA.BR",
+	"tools": [
+		{
+			"name": "open_image",
+			"description": "Abre uma imagem a partir de uma URL no editor.",
+			"parameters": {
+				"image": {
+					"type": "string",
+					"description": "URL da imagem para abrir"
+				}
+			},
+			"url_template": "?image={image}"
+		},
+		{
+			"name": "remove_bg",
+			"description": "Abre uma imagem e aplica automaticamente a remoção de fundo.",
+			"parameters": {
+				"image": {
+					"type": "string",
+					"description": "URL da imagem para processar"
+				}
+			},
+			"url_template": "?image={image}&action=ai_remove_bg"
+		},
+		{
+			"name": "colorize",
+			"description": "Abre uma imagem e aplica automaticamente a colorização por IA.",
+			"parameters": {
+				"image": {
+					"type": "string",
+					"description": "URL da imagem para colorizar"
+				}
+			},
+			"url_template": "?image={image}&action=ai_colorize"
+		},
+		{
+			"name": "upscale",
+			"description": "Abre uma imagem e aumenta sua resolução via IA.",
+			"parameters": {
+				"image": {
+					"type": "string",
+					"description": "URL da imagem para aumentar resolução"
+				}
+			},
+			"url_template": "?image={image}&action=ai_upscale"
+		}
+	],
+	"capabilities": {
+		"state_sharing": true,
+		"image_processing": true,
+		"credit_system": true
+	}
+}
