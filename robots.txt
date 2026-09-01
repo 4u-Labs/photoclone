@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+Allow: /images/
+Disallow: /photoclone/
+Disallow: /dist/
+Disallow: /node_modules/
+Disallow: /.env
+Disallow: /db.php
+Disallow: /api_*.php
+
+Sitemap: https://4u.ia.br/app/photoclone/sitemap.xml
