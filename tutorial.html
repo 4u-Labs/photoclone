@@ -1,0 +1,2989 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Tutorial Completo & Guia do Usuário — PhotoClone Pro</title>
+	<link rel="icon" sizes="192x192" href="images/favicon.png">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+	<style>
+		:root {
+			--bg-main: #090d16;
+			--bg-card: #111827;
+			--bg-card-hover: #172033;
+			--bg-card-inner: #0b1120;
+			--border: rgba(255, 255, 255, 0.08);
+			--border-active: rgba(168, 85, 247, 0.5);
+			--primary: #a855f7;
+			--primary-light: #c084fc;
+			--primary-glow: rgba(168, 85, 247, 0.25);
+			--secondary: #38bdf8;
+			--secondary-glow: rgba(56, 189, 248, 0.2);
+			--success: #10b981;
+			--warning: #f59e0b;
+			--text-main: #f8fafc;
+			--text-muted: #94a3b8;
+			--text-dim: #64748b;
+			--radius-lg: 16px;
+			--radius-md: 10px;
+			--radius-sm: 6px;
+		}
+
+		* {
+			box-sizing: border-box;
+			margin: 0;
+			padding: 0;
+		}
+
+		body {
+			font-family: 'Plus Jakarta Sans', sans-serif;
+			background-color: var(--bg-main);
+			color: var(--text-main);
+			line-height: 1.6;
+			min-height: 100vh;
+			display: flex;
+			flex-direction: column;
+		}
+
+		/* Top Navigation Header */
+		.top-nav {
+			position: sticky;
+			top: 0;
+			z-index: 100;
+			background: rgba(9, 13, 22, 0.85);
+			backdrop-filter: blur(16px);
+			border-bottom: 1px solid var(--border);
+			padding: 14px 24px;
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 20px;
+		}
+
+		.nav-brand {
+			display: flex;
+			align-items: center;
+			gap: 12px;
+			text-decoration: none;
+			color: #fff;
+		}
+
+		.nav-logo {
+			width: 34px;
+			height: 34px;
+			border-radius: 8px;
+			background: linear-gradient(135deg, var(--primary), var(--secondary));
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-weight: 800;
+			font-size: 18px;
+			box-shadow: 0 0 15px var(--primary-glow);
+		}
+
+		.nav-title {
+			font-size: 1.15rem;
+			font-weight: 700;
+			letter-spacing: -0.5px;
+		}
+
+		.nav-badge {
+			font-size: 0.75rem;
+			padding: 2px 8px;
+			border-radius: 20px;
+			background: rgba(168, 85, 247, 0.15);
+			border: 1px solid rgba(168, 85, 247, 0.3);
+			color: var(--primary-light);
+			font-weight: 600;
+		}
+
+		.btn-back {
+			display: inline-flex;
+			align-items: center;
+			gap: 8px;
+			padding: 8px 16px;
+			border: none;
+			cursor: pointer;
+			font-family: inherit;
+			border-radius: var(--radius-md);
+			background: linear-gradient(135deg, var(--primary), #7c3aed);
+			color: #fff;
+			text-decoration: none;
+			font-size: 0.9rem;
+			font-weight: 600;
+			transition: all 0.2s ease;
+			box-shadow: 0 2px 10px rgba(168, 85, 247, 0.3);
+		}
+
+		.btn-back:hover {
+			transform: translateY(-1px);
+			box-shadow: 0 4px 16px rgba(168, 85, 247, 0.45);
+		}
+
+		/* Main Layout Container */
+		.container {
+			max-width: 1240px;
+			margin: 0 auto;
+			padding: 30px 20px 80px;
+			width: 100%;
+		}
+
+		/* Hero Section */
+		.hero {
+			text-align: center;
+			padding: 40px 20px 30px;
+		}
+
+		.hero h1 {
+			font-size: 2.5rem;
+			font-weight: 800;
+			letter-spacing: -1px;
+			margin-bottom: 12px;
+			background: linear-gradient(135deg, #ffffff 30%, var(--primary-light) 70%, var(--secondary) 100%);
+			-webkit-background-clip: text;
+			-webkit-text-fill-color: transparent;
+		}
+
+		.hero p {
+			font-size: 1.1rem;
+			color: var(--text-muted);
+			max-width: 680px;
+			margin: 0 auto;
+		}
+
+		/* Live Search Box */
+		.search-container {
+			max-width: 720px;
+			margin: 30px auto 25px;
+			position: relative;
+		}
+
+		.search-input-wrapper {
+			position: relative;
+			display: flex;
+			align-items: center;
+		}
+
+		.search-icon {
+			position: absolute;
+			left: 18px;
+			font-size: 1.2rem;
+			color: var(--text-dim);
+			pointer-events: none;
+		}
+
+		.search-input {
+			width: 100%;
+			height: 56px;
+			padding: 0 110px 0 52px;
+			background: var(--bg-card);
+			border: 2px solid var(--border);
+			border-radius: var(--radius-lg);
+			color: #fff;
+			font-size: 1.05rem;
+			font-family: inherit;
+			outline: none;
+			transition: all 0.25s ease;
+			box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+		}
+
+		.search-input:focus {
+			border-color: var(--primary);
+			box-shadow: 0 0 0 4px var(--primary-glow);
+			background: #131b2e;
+		}
+
+		.search-shortcut {
+			position: absolute;
+			right: 16px;
+			display: flex;
+			align-items: center;
+			gap: 4px;
+			background: var(--bg-card-inner);
+			border: 1px solid var(--border);
+			padding: 4px 8px;
+			border-radius: var(--radius-sm);
+			font-size: 0.75rem;
+			color: var(--text-dim);
+			font-family: 'Fira Code', monospace;
+			pointer-events: none;
+		}
+
+		.search-stats {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			font-size: 0.85rem;
+			color: var(--text-dim);
+			margin-top: 10px;
+			padding: 0 8px;
+		}
+
+		/* Category Filter Pills */
+		.filter-pills {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 8px;
+			justify-content: center;
+			margin-bottom: 35px;
+		}
+
+		.filter-pill {
+			padding: 7px 15px;
+			border-radius: 30px;
+			background: rgba(255, 255, 255, 0.04);
+			border: 1px solid var(--border);
+			color: var(--text-muted);
+			font-size: 0.85rem;
+			font-weight: 500;
+			cursor: pointer;
+			transition: all 0.2s ease;
+			user-select: none;
+		}
+
+		.filter-pill:hover {
+			background: rgba(168, 85, 247, 0.1);
+			border-color: rgba(168, 85, 247, 0.3);
+			color: #fff;
+		}
+
+		.filter-pill.active {
+			background: linear-gradient(135deg, rgba(168, 85, 247, 0.25), rgba(56, 189, 248, 0.25));
+			border-color: var(--primary);
+			color: #fff;
+			font-weight: 600;
+			box-shadow: 0 0 12px var(--primary-glow);
+		}
+
+		/* Grid of Tutorial Cards */
+		.tutorial-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+			gap: 20px;
+		}
+
+		.tutorial-card {
+			background: var(--bg-card);
+			border: 1px solid var(--border);
+			border-radius: var(--radius-lg);
+			padding: 24px;
+			display: flex;
+			flex-direction: column;
+			transition: all 0.25s ease;
+			position: relative;
+			overflow: hidden;
+		}
+
+		.tutorial-card:hover {
+			background: var(--bg-card-hover);
+			border-color: var(--border-active);
+			transform: translateY(-2px);
+			box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+		}
+
+		.card-top {
+			display: flex;
+			align-items: flex-start;
+			justify-content: space-between;
+			gap: 10px;
+			margin-bottom: 12px;
+		}
+
+		.card-header-left {
+			display: flex;
+			align-items: flex-start;
+			gap: 12px;
+			flex: 1;
+			min-width: 0;
+		}
+
+		.card-icon {
+			width: 42px;
+			height: 42px;
+			border-radius: var(--radius-md);
+			background: rgba(168, 85, 247, 0.12);
+			border: 1px solid rgba(168, 85, 247, 0.25);
+			color: var(--primary-light);
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 1.35rem;
+			flex-shrink: 0;
+			margin-top: 2px;
+		}
+
+		.card-category {
+			font-size: 0.72rem;
+			text-transform: uppercase;
+			letter-spacing: 0.5px;
+			color: var(--secondary);
+			font-weight: 700;
+			margin-bottom: 3px;
+		}
+
+		.card-title {
+			font-size: 1.12rem;
+			font-weight: 700;
+			color: #fff;
+			line-height: 1.35;
+		}
+
+		.card-shortcut {
+			background: var(--bg-card-inner);
+			border: 1px solid rgba(255, 255, 255, 0.12);
+			padding: 3px 8px;
+			border-radius: var(--radius-sm);
+			font-size: 0.72rem;
+			font-family: 'Fira Code', monospace;
+			color: #e2e8f0;
+			white-space: nowrap;
+			box-shadow: inset 0 -1px 0 rgba(0,0,0,0.4);
+			flex-shrink: 0;
+			margin-top: 2px;
+		}
+
+		.card-desc {
+			color: var(--text-muted);
+			font-size: 0.92rem;
+			margin-bottom: 16px;
+			line-height: 1.5;
+		}
+
+		.card-steps {
+			background: var(--bg-card-inner);
+			border: 1px solid rgba(255, 255, 255, 0.05);
+			border-radius: var(--radius-md);
+			padding: 14px;
+			margin-bottom: 14px;
+		}
+
+		.card-steps-title {
+			font-size: 0.8rem;
+			font-weight: 700;
+			color: #e2e8f0;
+			text-transform: uppercase;
+			letter-spacing: 0.5px;
+			margin-bottom: 8px;
+			display: flex;
+			align-items: center;
+			gap: 6px;
+		}
+
+		.steps-list {
+			list-style: none;
+			counter-reset: step-counter;
+		}
+
+		.steps-list li {
+			position: relative;
+			padding-left: 24px;
+			font-size: 0.86rem;
+			color: #cbd5e1;
+			margin-bottom: 6px;
+			line-height: 1.45;
+		}
+
+		.steps-list li:last-child {
+			margin-bottom: 0;
+		}
+
+		.steps-list li::before {
+			counter-increment: step-counter;
+			content: counter(step-counter);
+			position: absolute;
+			left: 0;
+			top: 2px;
+			width: 16px;
+			height: 16px;
+			background: rgba(168, 85, 247, 0.25);
+			color: var(--primary-light);
+			border-radius: 50%;
+			font-size: 0.65rem;
+			font-weight: 700;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+
+		.card-tip {
+			background: rgba(245, 158, 11, 0.08);
+			border-left: 3px solid var(--warning);
+			border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+			padding: 8px 12px;
+			font-size: 0.82rem;
+			color: #fde68a;
+			line-height: 1.4;
+			margin-top: auto;
+		}
+
+		.card-tip strong {
+			color: #fbbf24;
+		}
+
+		kbd {
+			background: #1e293b;
+			border: 1px solid #475569;
+			border-bottom-width: 2px;
+			border-radius: 4px;
+			padding: 2px 5px;
+			font-family: 'Fira Code', monospace;
+			font-size: 0.8em;
+			color: #f1f5f9;
+		}
+
+		mark {
+			background: rgba(234, 179, 8, 0.35);
+			color: #fef08a;
+			padding: 1px 3px;
+			border-radius: 3px;
+		}
+
+		/* No results message */
+		.no-results {
+			grid-column: 1 / -1;
+			text-align: center;
+			padding: 60px 20px;
+			background: var(--bg-card);
+			border: 1px dashed var(--border);
+			border-radius: var(--radius-lg);
+			display: none;
+		}
+
+		.no-results-icon {
+			font-size: 3rem;
+			margin-bottom: 12px;
+			opacity: 0.6;
+		}
+
+		.no-results h3 {
+			font-size: 1.3rem;
+			margin-bottom: 8px;
+			color: #fff;
+		}
+
+		.no-results p {
+			color: var(--text-muted);
+			margin-bottom: 18px;
+		}
+
+		.btn-clear {
+			padding: 8px 18px;
+			border-radius: var(--radius-md);
+			background: rgba(168, 85, 247, 0.15);
+			border: 1px solid rgba(168, 85, 247, 0.3);
+			color: var(--primary-light);
+			font-size: 0.9rem;
+			font-weight: 600;
+			cursor: pointer;
+			transition: all 0.2s ease;
+		}
+
+		.btn-clear:hover {
+			background: var(--primary);
+			color: #fff;
+		}
+
+		/* Quick Shortcuts Table Section */
+		.shortcuts-section {
+			margin-top: 50px;
+			background: var(--bg-card);
+			border: 1px solid var(--border);
+			border-radius: var(--radius-lg);
+			padding: 28px;
+		}
+
+		.shortcuts-section h2 {
+			font-size: 1.4rem;
+			font-weight: 700;
+			margin-bottom: 18px;
+			color: #fff;
+			display: flex;
+			align-items: center;
+			gap: 10px;
+		}
+
+		.shortcuts-table {
+			width: 100%;
+			border-collapse: collapse;
+			font-size: 0.9rem;
+		}
+
+		.shortcuts-table th, .shortcuts-table td {
+			padding: 10px 14px;
+			text-align: left;
+			border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+		}
+
+		.shortcuts-table th {
+			color: var(--text-dim);
+			text-transform: uppercase;
+			font-size: 0.75rem;
+			font-weight: 700;
+			letter-spacing: 0.5px;
+		}
+
+		.shortcuts-table tr:hover td {
+			background: rgba(255, 255, 255, 0.02);
+		}
+
+		/* Footer */
+		footer {
+			margin-top: auto;
+			border-top: 1px solid var(--border);
+			padding: 24px;
+			text-align: center;
+			font-size: 0.85rem;
+			color: var(--text-dim);
+		}
+
+		footer a {
+			color: var(--primary-light);
+			text-decoration: none;
+		}
+
+		footer a:hover {
+			text-decoration: underline;
+		}
+
+		/* Responsive */
+		@media (max-width: 768px) {
+			.hero h1 { font-size: 1.9rem; }
+			.tutorial-grid { grid-template-columns: 1fr; }
+			.top-nav { padding: 12px 16px; }
+			.search-shortcut { display: none; }
+			.search-input { padding-right: 20px; }
+		}
+	</style>
+</head>
+<body>
+
+	<!-- Top Navigation -->
+	<header class="top-nav">
+		<a href="index.php" class="nav-brand">
+			<div class="nav-logo">P</div>
+			<div>
+				<div class="nav-title">PhotoClone Pro</div>
+				<span class="nav-badge" id="tut-badge">Guia do Usuário</span>
+			</div>
+		</a>
+		<div style="display:flex; align-items:center; gap:12px;">
+			<div class="lang-switch-box" style="display:flex; align-items:center; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.15); border-radius:6px; padding:2px; gap:2px;">
+				<button id="tut-lang-pt" onclick="setTutorialLanguage('pt')" type="button" style="padding:4px 8px; font-size:11px; font-weight:800; border-radius:4px; border:none; cursor:pointer; background:#3b82f6; color:#ffffff; transition:all 0.2s;">PT</button>
+				<button id="tut-lang-en" onclick="setTutorialLanguage('en')" type="button" style="padding:4px 8px; font-size:11px; font-weight:800; border-radius:4px; border:none; cursor:pointer; background:transparent; color:#94a3b8; transition:all 0.2s;">EN</button>
+			</div>
+			<button type="button" onclick="fecharTutorial()" class="btn-back" title="Fechar tutorial e voltar à sua edição no PhotoClone">
+				<span>✖</span> <span id="tut-btn-close">Fechar e Voltar ao PhotoClone</span>
+			</button>
+		</div>
+	</header>
+
+	<!-- Main Container -->
+	<main class="container">
+
+		<!-- Hero Section -->
+		<section class="hero">
+			<h1 id="tut-hero-title">Central de Ajuda & Tutoriais</h1>
+			<p id="tut-hero-desc">Aprenda a utilizar cada ferramenta, efeito, camada e recurso de Inteligência Artificial do PhotoClone Pro com explicações práticas e passo a passo.</p>
+		</section>
+
+		<!-- Instant Search Bar -->
+		<div class="search-container">
+			<div class="search-input-wrapper">
+				<span class="search-icon">🔍</span>
+				<input type="text" id="tutorialSearch" class="search-input" placeholder="Pesquisar ferramenta, efeito, atalho ou recurso... (ex: corte, fundo, camadas)">
+				<div class="search-shortcut">
+					<kbd>/</kbd> ou <kbd>Ctrl+K</kbd>
+				</div>
+			</div>
+			<div class="search-stats">
+				<span id="resultsCount">Exibindo todos os tutoriais</span>
+				<span id="activeFilterLabel">Categoria: Todos</span>
+			</div>
+		</div>
+
+		<!-- Category Filter Pills -->
+		<div class="filter-pills" id="filterPills">
+			<button type="button" class="filter-pill active" data-category="all">🌟 Todos</button>
+			<button type="button" class="filter-pill" data-category="selecao">✂️ Seleção & Corte</button>
+			<button type="button" class="filter-pill" data-category="ia">🤖 Inteligência Artificial (IA)</button>
+			<button type="button" class="filter-pill" data-category="camadas">📑 Camadas</button>
+			<button type="button" class="filter-pill" data-category="pintura">🎨 Pintura & Desenho</button>
+			<button type="button" class="filter-pill" data-category="formas">📐 Formas & Texto</button>
+			<button type="button" class="filter-pill" data-category="efeitos">✨ Efeitos & Filtros</button>
+			<button type="button" class="filter-pill" data-category="ajustes">🖼️ Imagem & Tela</button>
+			<button type="button" class="filter-pill" data-category="exportar">💾 Salvar & Exportar</button>
+		</div>
+
+		<!-- Cards Grid -->
+		<div class="tutorial-grid" id="tutorialGrid">
+
+			<!-- CARD: Ferramenta de Corte (Crop) -->
+			<article class="tutorial-card" data-category="selecao" data-keywords="corte crop arrastar deslocar enquadramento proporcao alcas tamanho tela shift quadrado simetrico alt centro">
+				<div class="card-top">
+					<div class="card-header-left">
+						<div class="card-icon">✂️</div>
+						<div>
+							<div class="card-category">Seleção & Corte</div>
+							<h2 class="card-title">Ferramenta de Corte (Crop)</h2>
+						</div>
+					</div>
+					<div class="card-shortcut">Barra Lateral</div>
+				</div>
+				<p class="card-desc">Recorte sua imagem com precisão profissional, reposicionamento livre e suporte completo aos atalhos de proporção do Photoshop.</p>
+				<div class="card-steps">
+					<div class="card-steps-title">📋 Como usar e atalhos avançados:</div>
+					<ol class="steps-list">
+						<li>Clique na ferramenta <strong>Crop</strong> na barra lateral esquerda.</li>
+						<li><strong>Segure Shift:</strong> Trava o corte em <strong>Quadrado Perfeito (1:1)</strong> sem distorções.</li>
+						<li><strong>Segure Alt:</strong> Faz o corte crescer de forma <strong>simétrica a partir do centro</strong> do clique.</li>
+						<li><strong>Segure Shift + Alt:</strong> Quadrado 1:1 com expansão simétrica central!</li>
+						<li><strong>Deslocamento livre:</strong> Passe o mouse no centro do corte (cursor ✥) e arraste para reposicionar a área útil.</li>
+						<li>Clique no botão <strong>Crop</strong> no topo para aplicar.</li>
+					</ol>
+				</div>
+				<div class="card-tip">
+					💡 <strong>Dica Pro:</strong> Segure <kbd>Ctrl</kbd> ou <kbd>Cmd</kbd> ao criar o corte para manter a proporção exata de largura/altura da sua imagem original.
+				</div>
+			</article>
+
+			<!-- CARD: Mover e Transformar (Select) -->
+			<article class="tutorial-card" data-category="selecao" data-keywords="mover select transformar girar redimensionar escala posicao alinhamento">
+				<div class="card-top">
+					<div class="card-header-left">
+						<div class="card-icon">👆</div>
+						<div>
+							<div class="card-category">Seleção & Corte</div>
+							<h2 class="card-title">Mover e Transformar (Select)</h2>
+						</div>
+					</div>
+					<div class="card-shortcut">V</div>
+				</div>
+				<p class="card-desc">A ferramenta principal para selecionar camadas individuais, arrastar elementos na tela, rotacionar e redimensionar imagens e textos.</p>
+				<div class="card-steps">
+					<div class="card-steps-title">📋 Recursos avançados:</div>
+					<ol class="steps-list">
+						<li>Selecione a ferramenta <strong>Select</strong> (<kbd>V</kbd>) e clique na camada desejada.</li>
+						<li><strong>Alt + Arrastar (Clonar):</strong> Segure <kbd>Alt</kbd> e arraste qualquer camada para duplicá-la instantaneamente onde você soltar o mouse!</li>
+						<li><strong>Duplicação Instantânea:</strong> Pressione <kbd>Ctrl</kbd> + <kbd>J</kbd> para clonar a camada selecionada.</li>
+						<li>Use as alças para redimensionar mantendo a proporção.</li>
+					</ol>
+				</div>
+				<div class="card-tip">
+					💡 <strong>Dica Pro:</strong> Segure <kbd>Shift</kbd> para desativar o alinhamento magnético temporariamente se precisar de movimento totalmente livre.
+				</div>
+			</article>
+
+			<!-- CARD: Guias Magnéticas Inteligentes & Alinhamento -->
+			<article class="tutorial-card" data-category="selecao" data-keywords="guias inteligentes smart snapping alinhamento centro tela bordas magneticas magenta rosa linhas figma photoshop">
+				<div class="card-top">
+					<div class="card-header-left">
+						<div class="card-icon">🧲</div>
+						<div>
+							<div class="card-category">Seleção & Alinhamento</div>
+							<h2 class="card-title">Guias Magnéticas Inteligentes (Smart Snapping)</h2>
+						</div>
+					</div>
+					<div class="card-shortcut">Automático</div>
+				</div>
+				<p class="card-desc">Alinhe títulos, fotos, ícones e formas perfeitamente em segundos com linhas guias magnéticas dinâmicas em magenta.</p>
+				<div class="card-steps">
+					<div class="card-steps-title">📋 Como funciona:</div>
+					<ol class="steps-list">
+						<li>Ao arrastar qualquer elemento com a ferramenta <strong>Select</strong> (<kbd>V</kbd>), o PhotoClone detecta automaticamente os pontos chave.</li>
+						<li><strong>Centro da Tela:</strong> Uma linha guia magenta surge quando o objeto atinge o centro vertical ou horizontal exato do seu projeto.</li>
+						<li><strong>Alinhamento entre Camadas:</strong> Linhas inteligentes surgem quando seu elemento se alinha com o início, meio ou fim de outras camadas presentes no projeto.</li>
+					</ol>
+				</div>
+				<div class="card-tip">
+					💡 <strong>Dica Pro:</strong> O recurso vem ativado por padrão. Segure <kbd>Shift</kbd> se desejar ignorar o ímã em algum momento.
+				</div>
+			</article>
+
+			<!-- CARD: Varinha Mágica & Seleção por Cor -->
+			<article class="tutorial-card" data-category="selecao" data-keywords="varinha magica magic wand selecao cor tolerancia contiguo">
+				<div class="card-top">
+					<div class="card-header-left">
+						<div class="card-icon">🪄</div>
+						<div>
+							<div class="card-category">Seleção & Corte</div>
+							<h2 class="card-title">Varinha Mágica (Magic Wand)</h2>
+						</div>
+					</div>
+					<div class="card-shortcut">W</div>
+				</div>
+				<p class="card-desc">Seleciona automaticamente áreas contíguas com cores similares com base no nível de tolerância configurado.</p>
+				<div class="card-steps">
+					<div class="card-steps-title">📋 Como usar passo a passo:</div>
+					<ol class="steps-list">
+						<li>Clique na ferramenta <strong>Magic Wand</strong> (<kbd>W</kbd>).</li>
+						<li>Ajuste a <strong>Tolerância</strong> na barra superior (padrão: 40).</li>
+						<li>Clique na cor da imagem que deseja isolar para criar a seleção.</li>
+						<li>Pressione <kbd>Delete</kbd> para apagar ou aplique filtros na área selecionada.</li>
+					</ol>
+				</div>
+				<div class="card-tip">
+					💡 <strong>Dica Pro:</strong> Aumente a tolerância para cores degradê e diminua para bordas nítidas e cores sólidas.
+				</div>
+			</article>
+
+			<!-- CARD: Laço Poligonal e Livre -->
+			<article class="tutorial-card" data-category="selecao" data-keywords="laco lasso poligonal selecao livre contorno recorte">
+				<div class="card-top">
+					<div class="card-header-left">
+						<div class="card-icon">➰</div>
+						<div>
+							<div class="card-category">Seleção & Corte</div>
+							<h2 class="card-title">Laço Livre e Poligonal (Lasso)</h2>
+						</div>
+					</div>
+					<div class="card-shortcut">L</div>
+				</div>
+				<p class="card-desc">Permite recortar e selecionar áreas com formatos orgânicos desenhando à mão livre ou criando vértices poligonais.</p>
+				<div class="card-steps">
+					<div class="card-steps-title">📋 Como usar passo a passo:</div>
+					<ol class="steps-list">
+						<li>Selecione a ferramenta <strong>Lasso</strong> (<kbd>L</kbd>).</li>
+						<li>Clique e contorne o objeto desejado com o mouse.</li>
+						<li>Feche o contorno no ponto inicial para ativar a área selecionada.</li>
+					</ol>
+				</div>
+				<div class="card-tip">
+					💡 <strong>Dica Pro:</strong> Ideal para recortar pessoas e objetos com bordas complexas que a varinha mágica não alcança.
+				</div>
+			</article>
+
+			<!-- CARD: IA - Remover Fundo Automático -->
+			<article class="tutorial-card" data-category="ia" data-keywords="ia ai remover fundo background cutout inteligencia artificial replicate transparente">
+				<div class="card-top">
+					<div class="card-header-left">
+						<div class="card-icon">🤖</div>
+						<div>
+							<div class="card-category">Inteligência Artificial</div>
+							<h2 class="card-title">Remover Fundo com IA</h2>
+						</div>
+					</div>
+					<div class="card-shortcut">IA Tools</div>
+				</div>
+				<p class="card-desc">Utiliza modelos neurais avançados de visão computacional para isolar pessoas, produtos e objetos criando fundo 100% transparente.</p>
+				<div class="card-steps">
+					<div class="card-steps-title">📋 Como usar passo a passo:</div>
+					<ol class="steps-list">
+						<li>Certifique-se de estar conectado com sua conta 4uLabs / Keep AI.</li>
+						<li>Selecione a camada da imagem que deseja remover o fundo.</li>
+						<li>Acesse o menu superior: <strong>IA Tools ➔ Remover Fundo (AI)</strong>.</li>
+						<li>Aguarde alguns segundos. Uma nova camada sem fundo será gerada automaticamente!</li>
+					</ol>
+				</div>
+				<div class="card-tip">
+					💡 <strong>Dica Pro:</strong> Preserva cabelos finos, pelos e transparências com precisão de estúdio fotográfico.
+				</div>
+			</article>
+
+			<!-- CARD: IA - Colorizar Fotos Antigas -->
+			<article class="tutorial-card" data-category="ia" data-keywords="ia ai colorizar restaurar foto antiga preto branco cores inteligencia artificial">
+				<div class="card-top">
+					<div class="card-header-left">
+						<div class="card-icon">🎨</div>
+						<div>
+							<div class="card-category">Inteligência Artificial</div>
+							<h2 class="card-title">Colorizar Fotos com IA</h2>
+						</div>
+					</div>
+					<div class="card-shortcut">IA Tools</div>
+				</div>
+				<p class="card-desc">Restaura e aplica cores hiper-realistas e naturais em fotos históricas ou antigas em preto e branco.</p>
+				<div class="card-steps">
+					<div class="card-steps-title">📋 Como usar passo a passo:</div>
+					<ol class="steps-list">
+						<li>Abra uma foto antiga ou monocromática no PhotoClone.</li>
+						<li>Acesse o menu superior: <strong>IA Tools ➔ Colorizar (AI)</strong>.</li>
+						<li>A inteligência artificial analisa os tons de cinza, iluminação e texturas para recriar as cores fiéis.</li>
+						<li>O resultado surge em uma nova camada pronta para ajustes adicionais.</li>
+					</ol>
+				</div>
+				<div class="card-tip">
+					💡 <strong>Dica Pro:</strong> Excelente para restauração de árvores genealógicas e fotos de família.
+				</div>
+			</article>
+
+			<!-- CARD: IA - Upscale 2x / Super Resolução -->
+			<article class="tutorial-card" data-category="ia" data-keywords="ia ai upscale aumentar resolucao super nitidez qualidade 2x">
+				<div class="card-top">
+					<div class="card-header-left">
+						<div class="card-icon">🔍</div>
+						<div>
+							<div class="card-category">Inteligência Artificial</div>
+							<h2 class="card-title">Upscale 2x (Super Resolução)</h2>
+						</div>
+					</div>
+					<div class="card-shortcut">IA Tools</div>
+				</div>
+				<p class="card-desc">Dobra a resolução e reconstrói detalhes perdidos sem pixelizar ou embaçar a imagem.</p>
+				<div class="card-steps">
+					<div class="card-steps-title">📋 Como usar passo a passo:</div>
+					<ol class="steps-list">
+						<li>Selecione a camada com baixa resolução.</li>
+						<li>Acesse o menu: <strong>IA Tools ➔ Upscale 2x (AI)</strong>.</li>
+						<li>O modelo de Super Resolução gera novos pixels recriando bordas nítidas e texturas finas.</li>
+					</ol>
+				</div>
+				<div class="card-tip">
+					💡 <strong>Dica Pro:</strong> Perfeito antes de enviar fotos para impressão em alta definição ou banners.
+				</div>
+			</article>
+
+			<!-- CARD: Efeito HDR / Enriquecer -->
+			<article class="tutorial-card" data-category="efeitos" data-keywords="hdr efeito enrich enriquecer contraste dinamico nitidez cores vibrance vibrante">
+				<div class="card-top">
+					<div class="card-header-left">
+						<div class="card-icon">✨</div>
+						<div>
+							<div class="card-category">Efeitos & Filtros</div>
+							<h2 class="card-title">Enriquecer (Efeito HDR)</h2>
+						</div>
+					</div>
+					<div class="card-shortcut">IA Tools / Efeitos</div>
+				</div>
+				<p class="card-desc">Aumenta o alcance dinâmico, realça detalhes em sombras e altas luzes e dá aquele visual impactante e profissional de fotografia HDR.</p>
+				<div class="card-steps">
+					<div class="card-steps-title">📋 Como usar passo a passo:</div>
+					<ol class="steps-list">
+						<li>Abra a foto desejada no PhotoClone.</li>
+						<li>Clique no menu <strong>IA Tools ➔ Enriquecer (Efeito HDR)</strong>.</li>
+						<li>Ajuste os parâmetros de intensidade se desejar e clique em <strong>OK</strong>.</li>
+					</ol>
+				</div>
+				<div class="card-tip">
+					💡 <strong>Dica Pro:</strong> Transforma fotos tiradas em dias nublados ou com iluminação fraca em imagens vívidas.
+				</div>
+			</article>
+
+			<!-- CARD: Gerenciamento de Camadas -->
+			<article class="tutorial-card" data-category="camadas" data-keywords="camadas layers opacidade blend modes mesclagem ordem duplicar rasterizar">
+				<div class="card-top">
+					<div class="card-header-left">
+						<div class="card-icon">📑</div>
+						<div>
+							<div class="card-category">Camadas</div>
+							<h2 class="card-title">Gerenciamento de Camadas</h2>
+						</div>
+					</div>
+					<div class="card-shortcut">Painel Direito</div>
+				</div>
+				<p class="card-desc">As camadas permitem trabalhar com múltiplos elementos independentes (fotos, textos, sombras e formas) sem alterar a imagem base.</p>
+				<div class="card-steps">
+					<div class="card-steps-title">📋 Como usar passo a passo:</div>
+					<ol class="steps-list">
+						<li>No painel direito <strong>Layers</strong>, clique em <strong>+ Nova Camada</strong>.</li>
+						<li>Alterne a visibilidade clicando no ícone de olho (👁️).</li>
+						<li>Ajuste a <strong>Opacidade (0 a 100%)</strong> para efeitos de transparência.</li>
+						<li>Experimente os <strong>Modos de Mesclagem</strong> (Multiply, Screen, Overlay) para mesclas criativas de luz e cor.</li>
+					</ol>
+				</div>
+				<div class="card-tip">
+					💡 <strong>Dica Pro:</strong> Clique com o botão direito em uma camada para acessar opções rápidas como Duplicar, Mesclar para Baixo e Rasterizar.
+				</div>
+			</article>
+
+			<!-- CARD: Pincel e Lápis -->
+			<article class="tutorial-card" data-category="pintura" data-keywords="pincel brush lapis pencil pintura desenho dureza tamanho opacidade">
+				<div class="card-top">
+					<div class="card-header-left">
+						<div class="card-icon">🖌️</div>
+						<div>
+							<div class="card-category">Pintura & Desenho</div>
+							<h2 class="card-title">Pincel (Brush) e Lápis (Pencil)</h2>
+						</div>
+					</div>
+					<div class="card-shortcut">B / P</div>
+				</div>
+				<p class="card-desc">Pincel suave para retoques e ilustrações fluidas; Lápis para desenho nítido pixel-perfect (ideal para Pixel Art).</p>
+				<div class="card-steps">
+					<div class="card-steps-title">📋 Como usar passo a passo:</div>
+					<ol class="steps-list">
+						<li>Selecione o <strong>Pincel (<kbd>B</kbd>)</strong> ou <strong>Lápis (<kbd>P</kbd>)</strong>.</li>
+						<li>Escolha a cor no painel <strong>Colors</strong> à direita.</li>
+						<li>Na barra superior, ajuste o <strong>Tamanho (Size)</strong> e a <strong>Dureza (Hardness)</strong>.</li>
+						<li>Pinte diretamente sobre a tela na camada selecionada.</li>
+					</ol>
+				</div>
+				<div class="card-tip">
+					💡 <strong>Dica Pro:</strong> Use <kbd>[</kbd> e <kbd>]</kbd> para diminuir ou aumentar o diâmetro do pincel rapidamente enquanto pinta.
+				</div>
+			</article>
+
+			<!-- CARD: Carimbo de Clonagem -->
+			<article class="tutorial-card" data-category="pintura" data-keywords="carimbo clone stamp clonagem remover objeto imperfeicao pele retoque">
+				<div class="card-top">
+					<div class="card-header-left">
+						<div class="card-icon">🖨️</div>
+						<div>
+							<div class="card-category">Pintura & Desenho</div>
+							<h2 class="card-title">Carimbo de Clonagem (Clone Stamp)</h2>
+						</div>
+					</div>
+					<div class="card-shortcut">C</div>
+				</div>
+				<p class="card-desc">Copia pixels de uma área de origem e os reproduz em outra área. Excelente para remover manchas de pele, postes ou objetos indesejados.</p>
+				<div class="card-steps">
+					<div class="card-steps-title">📋 Como usar passo a passo:</div>
+					<ol class="steps-list">
+						<li>Selecione a ferramenta <strong>Clone Tool</strong> (<kbd>C</kbd>).</li>
+						<li>Segure a tecla <kbd>Alt</kbd> e clique na área de referência que deseja copiar.</li>
+						<li>Solte o <kbd>Alt</kbd> e pinte sobre a área que deseja cobrir.</li>
+					</ol>
+				</div>
+				<div class="card-tip">
+					💡 <strong>Dica Pro:</strong> Use um pincel com borda suave (Hardness baixa) para que a mescla fique imperceptível.
+				</div>
+			</article>
+
+			<!-- CARD: Balde de Tinta e Gradientes -->
+			<article class="tutorial-card" data-category="pintura" data-keywords="balde tinta fill gradient gradiente degrade preenchimento cores">
+				<div class="card-top">
+					<div class="card-header-left">
+						<div class="card-icon">🪣</div>
+						<div>
+							<div class="card-category">Pintura & Desenho</div>
+							<h2 class="card-title">Balde de Tinta & Gradientes</h2>
+						</div>
+					</div>
+					<div class="card-shortcut">G</div>
+				</div>
+				<p class="card-desc">Preencha áreas inteiras com cores sólidas ou crie fundos modernos com degradês lineares e radiais multicoloridos.</p>
+				<div class="card-steps">
+					<div class="card-steps-title">📋 Como usar passo a passo:</div>
+					<ol class="steps-list">
+						<li>Selecione o <strong>Balde (<kbd>G</kbd>)</strong> para preencher com cor sólida.</li>
+						<li>Ou selecione <strong>Gradient</strong> para degradês.</li>
+						<li>Configure as cores de início e fim e arraste o mouse na tela na direção que o degradê deve seguir.</li>
+					</ol>
+				</div>
+				<div class="card-tip">
+					💡 <strong>Dica Pro:</strong> Combine gradientes com modos de mesclagem como <em>Overlay</em> ou <em>Soft Light</em> para criar efeitos de iluminação cinematográfica.
+				</div>
+			</article>
+
+			<!-- CARD: Texto e Google Fonts -->
+			<article class="tutorial-card" data-category="formas" data-keywords="texto text fontes google fonts tipografia letras escrever titulo">
+				<div class="card-top">
+					<div class="card-header-left">
+						<div class="card-icon">🔤</div>
+						<div>
+							<div class="card-category">Formas & Texto</div>
+							<h2 class="card-title">Texto Vetorial & Google Fonts</h2>
+						</div>
+					</div>
+					<div class="card-shortcut">T</div>
+				</div>
+				<p class="card-desc">Insira títulos, legendas e tipografias de alto impacto com centenas de fontes do catálogo oficial do Google Fonts.</p>
+				<div class="card-steps">
+					<div class="card-steps-title">📋 Como usar passo a passo:</div>
+					<ol class="steps-list">
+						<li>Clique na ferramenta <strong>Text (<kbd>T</kbd>)</strong> e clique no ponto da tela onde deseja escrever.</li>
+						<li>Digite seu texto na janela que abrir.</li>
+						<li>Escolha a família da fonte, tamanho, estilo (Negrito, Itálico), cor e alinhamento.</li>
+						<li>O texto é gerado como um elemento vetorial nítido em qualquer resolução!</li>
+					</ol>
+				</div>
+				<div class="card-tip">
+					💡 <strong>Dica Pro:</strong> Para aplicar filtros artísticos no texto, clique com o botão direito na camada dele e escolha <em>Rasterize</em>.
+				</div>
+			</article>
+
+			<!-- CARD: Adicionar Novas Fontes (Google Fonts & Add Font) -->
+			<article class="tutorial-card" data-category="formas" data-keywords="add font adicionar fonte google fonts tipografia novas fontes ttf otf instalar fontes bebas neue dancing script anton caveat cinzel">
+				<div class="card-top">
+					<div class="card-header-left">
+						<div class="card-icon">🔤</div>
+						<div>
+							<div class="card-category">Tipografia & Texto</div>
+							<h2 class="card-title">Como Adicionar Fontes [Add Font...]</h2>
+						</div>
+					</div>
+					<div class="card-shortcut">Menu de Fontes</div>
+				</div>
+				<p class="card-desc">Adicione qualquer uma das mais de 1.500 fontes gratuitas do catálogo oficial do Google Fonts direto no seu projeto.</p>
+				<div class="card-steps">
+					<div class="card-steps-title">📋 Como adicionar novas fontes passo a passo:</div>
+					<ol class="steps-list">
+						<li>Com a ferramenta de <strong>Texto (<kbd>T</kbd>)</strong> ativa, clique no menu seletor de <strong>Fontes</strong> na barra superior.</li>
+						<li>Clique na primeira opção da lista: <strong><code>[Add Font...]</code></strong>.</li>
+						<li>Uma janela com a biblioteca do <strong>Google Fonts</strong> será aberta com prévia visual em tempo real.</li>
+						<li>Digite o nome da fonte no campo de pesquisa (ex: <em>Bebas Neue, Anton, Dancing Script, Caveat, Cinzel, Righteous, Pacifico</em>).</li>
+						<li>Marque a caixinha ao lado da fonte desejada e clique em <strong>Ok</strong>.</li>
+						<li>Pronto! A nova fonte será carregada instantaneamente, adicionada à sua lista e aplicada ao seu texto!</li>
+					</ol>
+				</div>
+				<div class="card-tip">
+					💡 <strong>Dica Pro:</strong> As fontes adicionadas ficam vinculadas automaticamente ao seu projeto quando você salva em <code>.JSON</code> ou pelo <em>Auto-Save</em>.
+				</div>
+			</article>
+
+			<!-- CARD: Biblioteca de Fotos Gratuitas em Alta Resolução -->
+			<article class="tutorial-card" data-category="formas" data-keywords="fotos gratuitas stock imagens unsplash pexels pixabay buscar fotos comida negocios fitness natureza texturas banco de imagens">
+				<div class="card-top">
+					<div class="card-header-left">
+						<div class="card-icon">📷</div>
+						<div>
+							<div class="card-category">Banco de Imagens</div>
+							<h2 class="card-title">Fotos Gratuitas em Alta Resolução</h2>
+						</div>
+					</div>
+					<div class="card-shortcut">Fotos / Stock</div>
+				</div>
+				<p class="card-desc">Milhões de fotos e ilustrações profissionais gratuitas para uso comercial (CC0 / Pixabay / Unsplash). Busque em português e insira direto na sua arte com 1 clique.</p>
+				<div class="card-steps">
+					<div class="card-steps-title">📋 Como usar passo a passo:</div>
+					<ol class="steps-list">
+						<li>No menu <strong>Arquivo</strong>, clique em <strong>📷 Buscar Fotos Gratuitas</strong>.</li>
+						<li>Digite o que procura em português ou inglês (ex: <em>"hambúrguer"</em>, <em>"escritório"</em>, <em>"fitness"</em>) ou use os botões rápidos de categoria.</li>
+						<li>Veja a galeria de fotos em alta resolução com rolagem infinita.</li>
+						<li>Clique em qualquer foto para inseri-la instantaneamente como uma nova camada no seu projeto!</li>
+					</ol>
+				</div>
+				<div class="card-tip">
+					💡 <strong>Dica Pro:</strong> Combine com a ferramenta <em>🪄 Remover Fundo com IA</em> para recortar produtos e modelos fotográficos em 3 segundos!
+				</div>
+			</article>
+
+			<!-- CARD: Ilustrações Vetoriais & Arte Conceitual (Flat & 3D) -->
+			<article class="tutorial-card" data-category="formas" data-keywords="ilustracoes arte conceitual vetorial 3d flat art startup negocios saude educacao marketing infograficos">
+				<div class="card-top">
+					<div class="card-header-left">
+						<div class="card-icon">🎨</div>
+						<div>
+							<div class="card-category">Ilustrações & Arte 3D</div>
+							<h2 class="card-title">Ilustrações Vetoriais & Arte 3D</h2>
+						</div>
+					</div>
+					<div class="card-shortcut">Ilustrações</div>
+				</div>
+				<p class="card-desc">Milhares de ilustrações conceituais, cenas isométricas 3D, personagens e infográficos modernos para posts e banners.</p>
+				<div class="card-steps">
+					<div class="card-steps-title">📋 Como usar passo a passo:</div>
+					<ol class="steps-list">
+						<li>No menu <strong>Arquivo</strong>, clique em <strong>🎨 Buscar Ilustrações & Arte 3D</strong> ou acesse pelo Hub (tecla <strong>H</strong>).</li>
+						<li>Escolha uma categoria (<em>💼 Negócios</em>, <em>🚀 Startup & Tech</em>, <em>🩺 Saúde</em>, <em>🎓 Educação</em>, <em>🌀 Arte 3D</em>).</li>
+						<li>Clique na ilustração desejada para inseri-la instantaneamente na sua arte!</li>
+					</ol>
+				</div>
+				<div class="card-tip">
+					💡 <strong>Dica Pro:</strong> Ideal para compor landing pages, posts educativos do Instagram e anúncios corporativos!
+				</div>
+			</article>
+
+			<!-- CARD: Banco de Ícones & Vetores Globais -->
+			<article class="tutorial-card" data-category="formas" data-keywords="icones vetores svg iconify fontawesome material lucide tabler marcas logos buscar icones">
+				<div class="card-top">
+					<div class="card-header-left">
+						<div class="card-icon">🎯</div>
+						<div>
+							<div class="card-category">Ícones & Vetores</div>
+							<h2 class="card-title">Banco de Ícones Globais (+200k SVGs)</h2>
+						</div>
+					</div>
+					<div class="card-shortcut">Ícones / Vetores</div>
+				</div>
+				<p class="card-desc">Mais de 200.000 ícones vetoriais SVG de todas as bibliotecas mundiais com seletor de cor em tempo real.</p>
+				<div class="card-steps">
+					<div class="card-steps-title">📋 Como usar passo a passo:</div>
+					<ol class="steps-list">
+						<li>No menu <strong>Arquivo</strong>, clique em <strong>🎯 Buscar Ícones Globais (+200k)</strong>.</li>
+						<li>Escolha a cor do ícone na paleta (Branco, Preto, Azul, Vermelho ou cor personalizada).</li>
+						<li>Digite o que procura (ex: <em>"user"</em>, <em>"whatsapp"</em>, <em>"cart"</em>, <em>"star"</em>) ou use as categorias rápidas.</li>
+						<li>Clique no ícone para inseri-lo como uma camada cristalina e transparente de alta definição!</li>
+					</ol>
+				</div>
+				<div class="card-tip">
+					💡 <strong>Dica Pro:</strong> Como os ícones são vetoriais (SVG), você pode ampliá-los sem perder qualidade!
+				</div>
+			</article>
+
+			<!-- CARD: Wallpapers & Fundos 4K -->
+			<article class="tutorial-card" data-category="formas" data-keywords="wallpapers fundos planos de fundo 4k ultra hd texturas marmore madeira espaco cyberpunk">
+				<div class="card-top">
+					<div class="card-header-left">
+						<div class="card-icon">🖼️</div>
+						<div>
+							<div class="card-category">Wallpapers & 4K</div>
+							<h2 class="card-title">Wallpapers & Fundos em 4K</h2>
+						</div>
+					</div>
+					<div class="card-shortcut">Wallpapers 4K</div>
+				</div>
+				<p class="card-desc">Papéis de parede e texturas de luxo em altíssima resolução 4K Ultra HD para seus planos de fundo.</p>
+				<div class="card-steps">
+					<div class="card-steps-title">📋 Como usar passo a passo:</div>
+					<ol class="steps-list">
+						<li>No menu <strong>Arquivo</strong>, clique em <strong>🖼️ Buscar Wallpapers 4K</strong>.</li>
+						<li>Navegue pelas categorias rápidas (<em>💎 4K Ultra HD</em>, <em>🌆 Cyberpunk</em>, <em>🏛️ Mármore</em>, <em>🪵 Madeira</em>, <em>🌌 Espaço</em>, etc.).</li>
+						<li>Role suavemente para carregar centenas de papéis de parede em 4K.</li>
+						<li>Clique em qualquer wallpaper para inseri-lo e ajustá-lo na tela!</li>
+					</ol>
+				</div>
+				<div class="card-tip">
+					💡 <strong>Dica Pro:</strong> Use como plano de fundo para seus posts e produtos para um visual profissional!
+				</div>
+			</article>
+
+			<!-- CARD: Adesivos, Setas & Doodles Transparentes -->
+			<article class="tutorial-card" data-category="formas" data-keywords="adesivos stickers setas doodles rabiscos selos promocao chamas brilho transparentes">
+				<div class="card-top">
+					<div class="card-header-left">
+						<div class="card-icon">🏹</div>
+						<div>
+							<div class="card-category">Adesivos & Doodles</div>
+							<h2 class="card-title">Adesivos, Setas & Doodles Transparentes</h2>
+						</div>
+					</div>
+					<div class="card-shortcut">Stickers</div>
+				</div>
+				<p class="card-desc">Milhões de adesivos, setas neon, rabiscos desenhados à mão e selos de promoção com fundo 100% transparente.</p>
+				<div class="card-steps">
+					<div class="card-steps-title">📋 Como usar passo a passo:</div>
+					<ol class="steps-list">
+						<li>No menu <strong>Arquivo</strong>, clique em <strong>🏹 Buscar Adesivos & Doodles</strong>.</li>
+						<li>Escolha uma categoria rápida (<em>⚡ Setas Neon</em>, <em>✏️ Rabisco</em>, <em>🏷️ Selos Promo</em>, <em>🔥 Chamas</em>, etc.).</li>
+						<li>Clique em qualquer adesivo para colá-lo sobre a sua arte sem fundo branco!</li>
+					</ol>
+				</div>
+				<div class="card-tip">
+					💡 <strong>Dica Pro:</strong> Perfeito para destacar preços, apontar botões de chamada e criar artes estilo Instagram Stories!
+				</div>
+			</article>
+
+			<!-- CARD: Emojis 3D em Alta Resolução -->
+			<article class="tutorial-card" data-category="formas" data-keywords="emojis 3d fluent emojis alta resolucao 1024px risada coracao foguete trofeu">
+				<div class="card-top">
+					<div class="card-header-left">
+						<div class="card-icon">💥</div>
+						<div>
+							<div class="card-category">Emojis 3D & HD</div>
+							<h2 class="card-title">Emojis 3D em Alta Resolução (1024px)</h2>
+						</div>
+					</div>
+					<div class="card-shortcut">Emojis 3D</div>
+				</div>
+				<p class="card-desc">Coleção de emojis 3D modernos e brilhantes renderizados em altíssima definição (1024px) com fundo transparente.</p>
+				<div class="card-steps">
+					<div class="card-steps-title">📋 Como usar passo a passo:</div>
+					<ol class="steps-list">
+						<li>No menu <strong>Arquivo</strong>, clique em <strong>💥 Buscar Emojis 3D & Pop</strong>.</li>
+						<li>Busque pelo nome ou clique nas categorias rápidas (<em>😂 Top 15 Mundo</em>, <em>❤️ Amor</em>, <em>🔥 Fogo</em>, <em>💰 Dinheiro</em>, <em>🚀 Foguetes</em>).</li>
+						<li>Clique no emoji para inseri-lo em tamanho gigante e ultra nítido na sua imagem!</li>
+					</ol>
+				</div>
+				<div class="card-tip">
+					💡 <strong>Dica Pro:</strong> Emojis 3D aumentam em até 3x o engajamento e a taxa de clique em anúncios e banners!
+				</div>
+			</article>
+
+									<!-- CARD: Meus Projetos Recentes & Auto-Save no Navegador -->
+			<article class="tutorial-card" data-category="geral" data-keywords="auto-save salvar projetos recentes recuperar historico permanente indexeddb fechar aba sem perder restaurar backup json">
+				<div class="card-top">
+					<div class="card-header-left">
+						<div class="card-icon">💾</div>
+						<div>
+							<div class="card-category">Projetos & Segurança</div>
+							<h2 class="card-title">Projetos Recentes & Auto-Save</h2>
+						</div>
+					</div>
+					<div class="card-shortcut">Projetos Recentes</div>
+				</div>
+				<p class="card-desc">Segurança total contra perda de dados! O PhotoClone salva automaticamente seu progresso em segundo plano no navegador (IndexedDB) a cada 4 segundos.</p>
+				<div class="card-steps">
+					<div class="card-steps-title">📋 Principais benefícios:</div>
+					<ol class="steps-list">
+						<li><strong>⚡ Auto-Save Silencioso:</strong> Salva cada alteração de camada sem travar nem interromper sua edição.</li>
+						<li><strong>🛡️ Proteção contra Quedas de Energia e Fechamento Acidental:</strong> Se a aba fechar, ao reabrir você recebe um aviso para continuar de onde parou com 1 clique!</li>
+						<li><strong>📂 Galeria Visual de Recentes:</strong> Acesse <em>Arquivo ➔ Meus Projetos Recentes</em> para ver miniaturas dos seus últimos 25 trabalhos.</li>
+						<li><strong>💾 Download Rápido de Backup:</strong> Exporte o arquivo <code>.json</code> de qualquer projeto salvo com 1 toque.</li>
+					</ol>
+				</div>
+				<div class="card-tip">
+					💡 <strong>Dica Pro:</strong> Todos os seus projetos recentes ficam armazenados com 100% de privacidade direto no seu computador.
+				</div>
+			</article>
+
+			<!-- CARD: Instalar PhotoClone Pro como App (PWA) -->
+			<article class="tutorial-card" data-category="geral" data-keywords="instalar app pwa offline desktop celular chrome edge windows mac android aplicativo barra superior">
+				<div class="card-top">
+					<div class="card-header-left">
+						<div class="card-icon">📲</div>
+						<div>
+							<div class="card-category">Aplicativo & Acesso</div>
+							<h2 class="card-title">Instalar App no Computador e Celular</h2>
+						</div>
+					</div>
+					<div class="card-shortcut">Instalar PWA</div>
+				</div>
+				<p class="card-desc">Use o PhotoClone Pro como um programa nativo do seu computador ou aplicativo no seu celular com carregamento instantâneo e suporte offline.</p>
+				<div class="card-steps">
+					<div class="card-steps-title">📋 Como instalar com 1 clique:</div>
+					<ol class="steps-list">
+						<li>Na barra superior do PhotoClone, clique no botão azul <strong>[ 📲 Instalar App ]</strong>.</li>
+						<li>Confirme a instalação na janela que abrir no seu navegador (Chrome, Edge ou Brave).</li>
+						<li>Um ícone do <strong>PhotoClone Pro</strong> será criado na sua Área de Trabalho e no Menu Iniciar.</li>
+						<li>O editor abrirá em janela própria e dedicada sem as barras do navegador!</li>
+					</ol>
+				</div>
+				<div class="card-tip">
+					💡 <strong>Dica Pro:</strong> No celular (Android ou iPhone), você também pode adicionar o PhotoClone à sua tela de início para editar fotos em qualquer lugar!
+				</div>
+			</article>
+
+			<!-- CARD: Efeitos Rápidos de Texto com 1 Clique -->
+			<article class="tutorial-card" data-category="formas" data-keywords="efeitos texto estilos sombra drop shadow contorno stroke borda brilho neon outer glow tarja fundo caixa destaque badge titulos chamadas">
+				<div class="card-top">
+					<div class="card-header-left">
+						<div class="card-icon">✨</div>
+						<div>
+							<div class="card-category">Formas & Texto</div>
+							<h2 class="card-title">Efeitos Rápidos de Texto com 1 Clique</h2>
+						</div>
+					</div>
+					<div class="card-shortcut">Painel Detalhes</div>
+				</div>
+				<p class="card-desc">Adicione sombra projetada, contornos marcantes, brilho neon moderno e caixas de fundo/tarja de destaque aos seus títulos com um único clique.</p>
+				<div class="card-steps">
+					<div class="card-steps-title">📋 Efeitos disponíveis:</div>
+					<ol class="steps-list">
+						<li><strong>🕶️ Sombra (Drop Shadow):</strong> Dá profundidade tridimensional e destaque sobre fundos coloridos.</li>
+						<li><strong>🎨 Contorno (Stroke):</strong> Cria uma borda de alta nitidez que facilita a leitura de textos sobre qualquer imagem.</li>
+						<li><strong>✨ Brilho Neon (Outer Glow):</strong> Efeito cyberpunk e luminoso moderno para títulos chamativos.</li>
+						<li><strong>🏷️ Tarja Fundo (Caixa de Destaque):</strong> Fundo arredondado elegante estilo tarja de notícia ou postagem de redes sociais.</li>
+					</ol>
+				</div>
+				<div class="card-tip">
+					💡 <strong>Dica Pro:</strong> Selecione a camada de texto e clique nos botões na barra lateral direita para ligar ou desligar os efeitos instantaneamente!
+				</div>
+			</article>
+
+			<!-- CARD: Gerador de QR Code & Chave PIX (Atalho Q) -->
+			<article class="tutorial-card" data-category="formas" data-keywords="qr code pix chave pix whatsapp link wifi pagamento brcode nubank banco central emv atalho q lateral">
+				<div class="card-top">
+					<div class="card-header-left">
+						<div class="card-icon">📱</div>
+						<div>
+							<div class="card-category">Ferramentas Rápidas</div>
+							<h2 class="card-title">Gerador de QR Code & Chave PIX</h2>
+						</div>
+					</div>
+					<div class="card-shortcut">Atalho Q</div>
+				</div>
+				<p class="card-desc">Gere QR Codes em alta resolução com Chave PIX oficial do Banco Central (BR Code), link direto de WhatsApp, redes sociais ou Wi-Fi com 1 clique na barra lateral.</p>
+				<div class="card-steps">
+					<div class="card-steps-title">📋 Tipos suportados:</div>
+					<ol class="steps-list">
+						<li><strong>💸 Chave PIX Dinâmica:</strong> Insira sua chave (CPF/CNPJ, E-mail, Celular ou Aleatória), nome e valor opcional para gerar o código EMV escaneável por qualquer app de banco.</li>
+						<li><strong>📱 WhatsApp Direto:</strong> Insira o número e texto da mensagem para iniciar a conversa automaticamente no WhatsApp do cliente.</li>
+						<li><strong>🌐 Link / Cardápio:</strong> Direcione direto para seu site, cardápio digital ou Instagram.</li>
+						<li><strong>📶 Conexão Wi-Fi:</strong> Compartilhe o Wi-Fi da sua loja/escritório com login automático ao escanear.</li>
+					</ol>
+				</div>
+				<div class="card-tip">
+					💡 <strong>Dica Pro:</strong> Pressione a tecla <kbd>Q</kbd> para abrir instantaneamente o gerador de QR Code & PIX de qualquer lugar do editor!
+				</div>
+			</article>
+
+			<!-- CARD: Banco de Recursos Criativos (Atalho H) -->
+			<article class="tutorial-card" data-category="formas" data-keywords="recursos criativos hub fotos gratuitas stock ilustracoes vetoriais 3d icones iconify wallpapers 4k adesivos transparentes stickers emojis fluent atalho h canva">
+				<div class="card-top">
+					<div class="card-header-left">
+						<div class="card-icon">🌟</div>
+						<div>
+							<div class="card-category">Banco de Recursos</div>
+							<h2 class="card-title">Banco de Recursos Criativos</h2>
+						</div>
+					</div>
+					<div class="card-shortcut">Atalho H</div>
+				</div>
+				<p class="card-desc">Acesso instantâneo e 100% gratuito a milhões de ativos visuais em alta resolução organizados em uma central unificada.</p>
+				<div class="card-steps">
+					<div class="card-steps-title">🎨 O que você encontra no Hub Criativo:</div>
+					<ol class="steps-list">
+						<li><strong>📷 Fotos Gratuitas em HD:</strong> Milhões de fotos profissionais de alta qualidade (Unsplash & Pixabay) com busca inteligente em português.</li>
+						<li><strong>🎨 Ilustrações Vetoriais & 3D:</strong> Artes conceituais, flat art e ilustrações 3D para posts, apresentações e sites.</li>
+						<li><strong>🎯 Ícones & Vetores Globais (+200k):</strong> Acervo completo do Iconify com seletor de cor em tempo real.</li>
+						<li><strong>🖼️ Wallpapers & Fundos 4K:</strong> Planos de fundo Ultra HD em categorias como Minimalista, Neon, Espaço e Natureza.</li>
+						<li><strong>🏹 Adesivos, Setas & Doodles:</strong> Stickers com fundo 100% transparente para destaques e chamadas.</li>
+						<li><strong>💥 Central de Emojis do Mundo:</strong> 1.777 Emojis oficiais em altíssima definição (1024px).</li>
+					</ol>
+				</div>
+				<div class="card-tip">
+					💡 <strong>Dica Pro:</strong> Pressione a tecla <kbd>H</kbd> ou clique no ícone de brilhos mágicos (✨) na lateral para abrir o Hub a qualquer momento!
+				</div>
+			</article>
+
+			<!-- CARD: Formas Geométricas Vetoriais (Atalho U) -->
+			<article class="tutorial-card" data-category="formas" data-keywords="formas geometricas shapes vetor retangulo quadrado circulo elipse triangulo estrela star coracao heart seta arrow linha line hexagono balao callout atalho u photoshop">
+				<div class="card-top">
+					<div class="card-header-left">
+						<div class="card-icon">🔷</div>
+						<div>
+							<div class="card-category">Formas & Vetores</div>
+							<h2 class="card-title">Formas Geométricas Vetoriais</h2>
+						</div>
+					</div>
+					<div class="card-shortcut">Atalho U</div>
+				</div>
+				<p class="card-desc">Ferramenta completa de desenho de formas vetoriais no padrão Photoshop e Figma, com controle de contorno, preenchimento e atalhos de simetria.</p>
+				<div class="card-steps">
+					<div class="card-steps-title">📐 Formas disponíveis e recursos:</div>
+					<ol class="steps-list">
+						<li><strong>Variedade de Formas:</strong> Retângulo/Quadrado, Círculo/Elipse, Triângulo, Estrela (Star), Coração, Seta Vetorial sólida, Linha, Hexágono e Balão de Quadrinho.</li>
+						<li><strong>Estilo Completo:</strong> Ajuste a cor de <strong>Preenchimento (Fill)</strong>, cor e espessura do <strong>Contorno (Border de 1px a 100px)</strong> e <strong>Raio dos Cantos (Radius)</strong>.</li>
+						<li><strong>Segure Shift:</strong> Força proporção 1:1 perfeita (Quadrado, Círculo, Estrela perfeitamente simétrica ou ângulos retos de 45°/90° na Seta e Linha).</li>
+						<li><strong>Segure Alt:</strong> Desenha a forma a partir do <strong>centro</strong> do clique.</li>
+					</ol>
+				</div>
+				<div class="card-tip">
+					💡 <strong>Dica Pro:</strong> Pressione a tecla <kbd>U</kbd> para ativar as Formas Geométricas e use a barra superior para alternar o tipo de figura e espessura em tempo real!
+				</div>
+			</article>
+
+			<!-- CARD: Tamanhos Rápidos para Redes Sociais & Impressão -->
+			<article class="tutorial-card" data-category="ajustes" data-keywords="tamanhos dimensoes presets novo arquivo instagram feed stories reels tiktok youtube thumbnail capa facebook banner papel a4 impressao 300dpi cartao visita 4k">
+				<div class="card-top">
+					<div class="card-header-left">
+						<div class="card-icon">📐</div>
+						<div>
+							<div class="card-category">Imagem & Tela</div>
+							<h2 class="card-title">Tamanhos Rápidos para Redes Sociais & Impressão</h2>
+						</div>
+					</div>
+					<div class="card-shortcut">Ctrl+N</div>
+				</div>
+				<p class="card-desc">Inicie novos projetos com as proporções exatas recomendadas para as principais redes sociais e formatos gráficos com 1 clique.</p>
+				<div class="card-steps">
+					<div class="card-steps-title">📋 Como usar passo a passo:</div>
+					<ol class="steps-list">
+						<li>Acesse o menu <strong>Arquivo ➔ Novo</strong>.</li>
+						<li>Clique no cartão do formato desejado:
+							<br>• <strong>📱 Post Instagram:</strong> 1080 × 1080 (Feed Quadrado)
+							<br>• <strong>📲 Stories / Reels / TikTok:</strong> 1080 × 1920 (Vertical 9:16)
+							<br>• <strong>🎬 Capa YouTube:</strong> 1280 × 720 (HD 720p)
+							<br>• <strong>🖥️ Full HD:</strong> 1920 × 1080 (Vídeo & Banner)
+							<br>• <strong>🖼️ Banner Facebook:</strong> 1200 × 630
+							<br>• <strong>🖨️ Papel A4 (300 DPI):</strong> 2480 × 3508
+							<br>• <strong>📇 Cartão de Visita:</strong> 1050 × 600
+							<br>• <strong>📺 4K Ultra HD:</strong> 3840 × 2160
+						</li>
+						<li>Dê um duplo clique no cartão ou clique em <strong>Ok</strong> para criar o projeto.</li>
+					</ol>
+				</div>
+				<div class="card-tip">
+					💡 <strong>Dica Pro:</strong> Ao criar um novo documento, sua área de trabalho fica protegida e as imagens que você importar se ajustarão dentro dela sem alterar seu tamanho!
+				</div>
+			</article>
+
+			<!-- CARD: Sistema de Abas Multi-Documentos -->
+			<article class="tutorial-card" data-category="camadas" data-keywords="abas documentos tabs projetos multi documentos alternar abas isolamento camadas historico photoshop">
+				<div class="card-top">
+					<div class="card-header-left">
+						<div class="card-icon">📑</div>
+						<div>
+							<div class="card-category">Camadas & Projetos</div>
+							<h2 class="card-title">Sistema de Abas Multi-Documentos</h2>
+						</div>
+					</div>
+					<div class="card-shortcut">Abas Topo</div>
+				</div>
+				<p class="card-desc">Trabalhe em múltiplos projetos simultaneamente na mesma janela, exatamente como no Photoshop e Photopea, com isolamento total de camadas e histórico.</p>
+				<div class="card-steps">
+					<div class="card-steps-title">📋 Como usar passo a passo:</div>
+					<ol class="steps-list">
+						<li>Clique no botão <strong>+</strong> na barra de abas no topo da tela para abrir um novo projeto.</li>
+						<li>Alterne entre as abas a qualquer momento com 1 clique — cada aba mantém suas camadas, ordem, visibilidade, zoom e histórico de desfazer (Ctrl+Z) intactos.</li>
+						<li>Clique no <strong>×</strong> de qualquer aba para fechá-la quando terminar.</li>
+					</ol>
+				</div>
+				<div class="card-tip">
+					💡 <strong>Dica Pro:</strong> As abas são renomeadas automaticamente de acordo com o arquivo ou modelo criado.
+				</div>
+			</article>
+
+			<!-- CARD: Importar como Camada vs. Abrir Imagem -->
+			<article class="tutorial-card" data-category="exportar" data-keywords="importar abrir diferenca camada fundo tamanho tela projeto foto">
+				<div class="card-top">
+					<div class="card-header-left">
+						<div class="card-icon">📂</div>
+						<div>
+							<div class="card-category">Salvar & Exportar</div>
+							<h2 class="card-title">Importar como Camada vs. Abrir Arquivo Único</h2>
+						</div>
+					</div>
+					<div class="card-shortcut">O</div>
+				</div>
+				<p class="card-desc">Entenda quando usar a opção de inserir elementos no projeto atual e quando abrir uma foto isolada para edição direta.</p>
+				<div class="card-steps">
+					<div class="card-steps-title">📋 Diferenças práticas:</div>
+					<ol class="steps-list">
+						<li><strong>Arquivo ➔ Abrir ➔ Importar... (Atalho <kbd>O</kbd>):</strong> Adiciona uma ou mais fotos como novas camadas centralizadas no projeto já aberto, preservando as dimensões e o fundo da sua arte.</li>
+						<li><strong>Arquivo ➔ Abrir ➔ Abrir arquivo...:</strong> Redefine a tela para o tamanho exato da foto selecionada (ideal para retoques rápidos em fotos isoladas).</li>
+					</ol>
+				</div>
+				<div class="card-tip">
+					💡 <strong>Dica Pro:</strong> Você também pode arrastar e soltar arquivos do computador diretamente para a tela para importá-los como camada!
+				</div>
+			</article>
+
+			<!-- CARD: Filtros Estilo Instagram & Retrô -->
+			<article class="tutorial-card" data-category="efeitos" data-keywords="filtros instagram clarendon 1977 aden gingham inkwell lofi toaster valencia vintage retro">
+				<div class="card-top">
+					<div class="card-header-left">
+						<div class="card-icon">📸</div>
+						<div>
+							<div class="card-category">Efeitos & Filtros</div>
+							<h2 class="card-title">Filtros Estilo Instagram & Retrô</h2>
+						</div>
+					</div>
+					<div class="card-shortcut">Efeitos</div>
+				</div>
+				<p class="card-desc">Aplique filtros clássicos consagrados com 1 clique para dar atmosfera vintage, cinematográfica ou nostálgica às suas fotos.</p>
+				<div class="card-steps">
+					<div class="card-steps-title">📋 Como usar passo a passo:</div>
+					<ol class="steps-list">
+						<li>Selecione a camada da imagem.</li>
+						<li>Acesse <strong>Efeitos ➔ Instagram Filters</strong>.</li>
+						<li>Escolha entre <em>Clarendon, 1977, Aden, Gingham, Lo-fi, Valencia, Toaster, X-Pro II</em> ou <em>Vintage</em>.</li>
+					</ol>
+				</div>
+				<div class="card-tip">
+					💡 <strong>Dica Pro:</strong> Duplique a camada antes de aplicar para poder regular a intensidade através da opacidade da camada superior.
+				</div>
+			</article>
+
+			<!-- CARD: Pintura a Óleo & Efeitos Artísticos -->
+			<article class="tutorial-card" data-category="efeitos" data-keywords="pintura oleo oil lapis pencil mosaico blueprint night vision artistico">
+				<div class="card-top">
+					<div class="card-header-left">
+						<div class="card-icon">🖼️</div>
+						<div>
+							<div class="card-category">Efeitos & Filtros</div>
+							<h2 class="card-title">Pintura a Óleo & Efeitos Artísticos</h2>
+						</div>
+					</div>
+					<div class="card-shortcut">IA Tools</div>
+				</div>
+				<p class="card-desc">Transforme fotografias comuns em quadros de pintura a óleo com pinceladas realistas ou esboços a lápis feitos à mão.</p>
+				<div class="card-steps">
+					<div class="card-steps-title">📋 Como usar passo a passo:</div>
+					<ol class="steps-list">
+						<li>Acesse o menu <strong>IA Tools ➔ Pintura a Óleo</strong> ou <strong>Desenho a Lápis</strong>.</li>
+						<li>Ajuste o raio da pincelada e os níveis de detalhe.</li>
+						<li>Clique em OK para processar a pintura artística na tela.</li>
+					</ol>
+				</div>
+				<div class="card-tip">
+					💡 <strong>Dica Pro:</strong> Funciona espetacularmente bem em fotos de paisagens, retratos e flores.
+				</div>
+			</article>
+
+			<!-- CARD: Foco Seletivo & Tilt Shift (Miniatura) -->
+			<article class="tutorial-card" data-category="efeitos" data-keywords="tilt shift miniatura foco seletivo desfoque profundidade campo">
+				<div class="card-top">
+					<div class="card-header-left">
+						<div class="card-icon">🏙️</div>
+						<div>
+							<div class="card-category">Efeitos & Filtros</div>
+							<h2 class="card-title">Foco Seletivo & Tilt Shift (Miniatura)</h2>
+						</div>
+					</div>
+					<div class="card-shortcut">IA Tools</div>
+				</div>
+				<p class="card-desc">Simula lentes tilt-shift caras criando um gradiente de desfoque superior e inferior que faz cidades e cenários reais parecerem maquetes em miniatura.</p>
+				<div class="card-steps">
+					<div class="card-steps-title">📋 Como usar passo a passo:</div>
+					<ol class="steps-list">
+						<li>Abra uma foto tirada de cima (ângulo plongée).</li>
+						<li>Acesse <strong>IA Tools ➔ Foco Seletivo (Tilt Shift)</strong>.</li>
+						<li>Ajuste a posição da faixa de foco nítido e a intensidade do desfoque externo.</li>
+					</ol>
+				</div>
+				<div class="card-tip">
+					💡 <strong>Dica Pro:</strong> Aumente ligeiramente a saturação após aplicar para realçar o efeito de brinquedo / miniatura.
+				</div>
+			</article>
+
+			<!-- CARD: Redutor de Ruído (Denoise) & Granulação -->
+			<article class="tutorial-card" data-category="efeitos" data-keywords="denoise ruido granulacao grains limpar foto noturna nitidez">
+				<div class="card-top">
+					<div class="card-header-left">
+						<div class="card-icon">🧹</div>
+						<div>
+							<div class="card-category">Efeitos & Filtros</div>
+							<h2 class="card-title">Redutor de Ruído (Denoise) & Granulação</h2>
+						</div>
+					</div>
+					<div class="card-shortcut">IA Tools</div>
+				</div>
+				<p class="card-desc">Limpe o ruído granulado de fotos tiradas no escuro (alto ISO) ou adicione granulação de filme 35mm para estilo cinematográfico.</p>
+				<div class="card-steps">
+					<div class="card-steps-title">📋 Como usar passo a passo:</div>
+					<ol class="steps-list">
+						<li>Acesse <strong>IA Tools ➔ Redutor de Ruído (Denoise)</strong> para suavizar artefatos sem perder contornos.</li>
+						<li>Ou use <strong>Efeitos ➔ Grains</strong> para criar a textura analógica clássica do cinema.</li>
+					</ol>
+				</div>
+				<div class="card-tip">
+					💡 <strong>Dica Pro:</strong> Ideal para fotos de celular tiradas à noite com pouca iluminação.
+				</div>
+			</article>
+
+			<!-- CARD: Redimensionar Imagem vs Redimensionar Tela -->
+			<article class="tutorial-card" data-category="ajustes" data-keywords="redimensionar resize canvas size tela resolucao escala proporcao tamanho">
+				<div class="card-top">
+					<div class="card-header-left">
+						<div class="card-icon">📐</div>
+						<div>
+							<div class="card-category">Imagem & Tela</div>
+							<h2 class="card-title">Tamanho da Imagem vs Tamanho da Tela</h2>
+						</div>
+					</div>
+					<div class="card-shortcut">Imagem</div>
+				</div>
+				<p class="card-desc">Entenda a diferença crucial entre alterar a escala de todo o conteúdo ou expandir as margens da área de trabalho.</p>
+				<div class="card-steps">
+					<div class="card-steps-title">📋 Como usar passo a passo:</div>
+					<ol class="steps-list">
+						<li><strong>Redimensionar Imagem (Resize Image):</strong> Altera a escala e resolução de todas as camadas simultaneamente.</li>
+						<li><strong>Tamanho da Tela (Canvas Size):</strong> Aumenta ou diminui o espaço da prancheta em volta da imagem (adiciona margens sem esticar a arte).</li>
+					</ol>
+				</div>
+				<div class="card-tip">
+					💡 <strong>Dica Pro:</strong> Mantenha a opção <em>Constrain Proportions</em> ativada para nunca deformar a imagem.
+				</div>
+			</article>
+
+			<!-- CARD: Painel Visual de Histórico (History Timeline) -->
+			<article class="tutorial-card" data-category="camadas" data-keywords="historico history timeline linha do tempo voltar acoes desfazer refazer passos">
+				<div class="card-top">
+					<div class="card-header-left">
+						<div class="card-icon">📜</div>
+						<div>
+							<div class="card-category">Camadas & Histórico</div>
+							<h2 class="card-title">Painel de Histórico (Time Travel)</h2>
+						</div>
+					</div>
+					<div class="card-shortcut">Aba Histórico</div>
+				</div>
+				<p class="card-desc">Visualize a lista cronológica de todas as ações realizadas no seu projeto e volte para qualquer ponto no tempo com apenas 1 clique.</p>
+				<div class="card-steps">
+					<div class="card-steps-title">📋 Como usar passo a passo:</div>
+					<ol class="steps-list">
+						<li>No painel inferior direito, clique na aba <strong>📜 Histórico</strong> ao lado de <em>📑 Camadas</em>.</li>
+						<li>Você verá a linha do tempo com cada ação numerada e identificada (ex: <em>➕ Nova Camada</em>, <em>🔤 Texto</em>, <em>🎨 Filtro</em>).</li>
+						<li>Clique diretamente em qualquer etapa anterior para voltar o projeto exatamente naquele estado!</li>
+						<li>Ou clique em <strong>↺ Início</strong> para reverter tudo até o estado inicial do documento.</li>
+					</ol>
+				</div>
+				<div class="card-tip">
+					💡 <strong>Dica Pro:</strong> Ações futuras continuam na lista marcadas com ↷ caso você decida refazer até aquele ponto novamente.
+				</div>
+			</article>
+
+			<!-- CARD: Girar, Espelhar & Orientação -->
+			<article class="tutorial-card" data-category="ajustes" data-keywords="girar rotate espelhar flip horizontal vertical 90 180 angulo">
+				<div class="card-top">
+					<div class="card-header-left">
+						<div class="card-icon">🔄</div>
+						<div>
+							<div class="card-category">Imagem & Tela</div>
+							<h2 class="card-title">Girar & Espelhar (Flip / Rotate)</h2>
+						</div>
+					</div>
+					<div class="card-shortcut">Imagem / Camada</div>
+				</div>
+				<p class="card-desc">Gire fotos deitadas ou espelhe composições inteiras e camadas individuais na horizontal ou vertical.</p>
+				<div class="card-steps">
+					<div class="card-steps-title">📋 Como usar passo a passo:</div>
+					<ol class="steps-list">
+						<li>No menu <strong>Imagem</strong> para girar/espelhar o documento inteiro.</li>
+						<li>No menu <strong>Camada</strong> para girar/espelhar apenas a camada selecionada.</li>
+						<li>Escolha entre <em>Girar 90° Horário</em>, <em>Girar 90° Anti-horário</em>, <em>Girar 180°</em>, <em>Espelhar Horizontal</em> ou <em>Vertical</em>.</li>
+					</ol>
+				</div>
+				<div class="card-tip">
+					💡 <strong>Dica Pro:</strong> Espelhar a imagem na horizontal é um ótimo truque para testar a harmonia visual da sua composição.
+				</div>
+			</article>
+
+			<!-- CARD: Salvar, Exportar e Formatos de Arquivo -->
+			<article class="tutorial-card" data-category="exportar" data-keywords="salvar exportar png jpg jpeg webp svg gif json projeto">
+				<div class="card-top">
+					<div class="card-header-left">
+						<div class="card-icon">💾</div>
+						<div>
+							<div class="card-category">Salvar & Exportar</div>
+							<h2 class="card-title">Salvar, Exportar & Formatos</h2>
+						</div>
+					</div>
+					<div class="card-shortcut">Ctrl+S</div>
+				</div>
+				<p class="card-desc">Exporte para os principais formatos da web e impressão ou salve o projeto completo com todas as camadas editáveis.</p>
+				<div class="card-steps">
+					<div class="card-steps-title">📋 Principais formatos disponíveis:</div>
+					<ol class="steps-list">
+						<li><strong>PNG:</strong> Preserva transparência perfeita e máxima qualidade (ideal para logos e artes com recorte).</li>
+						<li><strong>JPG / JPEG:</strong> Compactação balanceada para fotos e redes sociais.</li>
+						<li><strong>WEBP:</strong> Formato ultra-leve de última geração para sites e lojas virtuais.</li>
+						<li><strong>JSON (.json):</strong> Salva o projeto PhotoClone com todas as camadas e textos intactos para continuar editando depois!</li>
+					</ol>
+				</div>
+				<div class="card-tip">
+					💡 <strong>Dica Pro:</strong> Pressione <kbd>Ctrl + S</kbd> para exportar a imagem ou <kbd>Ctrl + Shift + S</kbd> para salvar o arquivo de projeto.
+				</div>
+			</article>
+
+			<!-- CARD: Exportação Otimizada para WhatsApp & Redes -->
+			<article class="tutorial-card" data-category="exportar" data-keywords="whatsapp exportar otimizado redes instagram telegram compressao leve rapido nitidez sem perder qualidade">
+				<div class="card-top">
+					<div class="card-header-left">
+						<div class="card-icon">⚡</div>
+						<div>
+							<div class="card-category">Salvar & Exportar</div>
+							<h2 class="card-title">Exportar para WhatsApp & Redes</h2>
+						</div>
+					</div>
+					<div class="card-shortcut">Alt + S</div>
+				</div>
+				<p class="card-desc">Reduz o peso das imagens em até 70% a 90% preservando 100% da nitidez visual, evitando que o WhatsApp recomprima e estrague sua arte.</p>
+				<div class="card-steps">
+					<div class="card-steps-title">📋 Como usar passo a passo:</div>
+					<ol class="steps-list">
+						<li>Acesse <strong>Arquivo ➔ Exportar para WhatsApp / Redes</strong> (ou aperte <kbd>Alt + S</kbd>).</li>
+						<li>O PhotoClone calcula na hora a redução de peso (ex: de 4 MB para 350 KB).</li>
+						<li>Clique em <strong>Baixar Imagem</strong> ou <strong>Copiar para WhatsApp</strong>.</li>
+						<li>Cole direto na conversa do WhatsApp Web com <kbd>Ctrl + V</kbd>!</li>
+					</ol>
+				</div>
+				<div class="card-tip">
+					💡 <strong>Dica Pro:</strong> Garante que fotos grandes (acima de 2048px) sejam enquadradas na resolução ideal do WhatsApp sem perda de definição.
+				</div>
+			</article>
+
+			<!-- CARD: Sistema de Créditos Unificado 4uLabs -->
+			<article class="tutorial-card" data-category="ia" data-keywords="creditos login keep ai safework pagamento pix mercado pago unificado">
+				<div class="card-top">
+					<div class="card-header-left">
+						<div class="card-icon">💎</div>
+						<div>
+							<div class="card-category">Inteligência Artificial</div>
+							<h2 class="card-title">Créditos Unificados 4uLabs</h2>
+						</div>
+					</div>
+					<div class="card-shortcut">Menu Superior</div>
+				</div>
+				<p class="card-desc">Seus créditos de IA são centralizados e compartilhados entre Keep AI, SafeWork Pro e PhotoClone com recarga instantânea por PIX.</p>
+				<div class="card-steps">
+					<div class="card-steps-title">📋 Como usar passo a passo:</div>
+					<ol class="steps-list">
+						<li>Clique no botão <strong>Entrar</strong> no canto superior direito do PhotoClone.</li>
+						<li>Faça login ou crie uma conta em menos de 10 segundos com seu e-mail.</li>
+						<li>Clique no badge de diamantes 💎 para abrir o modal de recarga.</li>
+						<li>Pague o código PIX com confirmação automática sem precisar enviar comprovante!</li>
+					</ol>
+				</div>
+				<div class="card-tip">
+					💡 <strong>Dica Pro:</strong> Uma única recarga serve para todas as ferramentas do ecossistema 4uLabs ao mesmo tempo.
+				</div>
+			</article>
+
+			<!-- CARD: Criador de GIFs Animados (Animation) -->
+			<article class="tutorial-card" data-category="ajustes" data-keywords="gif animacao frames quadros timeline camadas animadas banner movimentacao">
+				<div class="card-top">
+					<div class="card-header-left">
+						<div class="card-icon">🎞️</div>
+						<div>
+							<div class="card-category">Imagem & Tela</div>
+							<h2 class="card-title">Criador de GIFs Animados</h2>
+						</div>
+					</div>
+					<div class="card-shortcut">Animation</div>
+				</div>
+				<p class="card-desc">Crie animações e banners dinâmicos onde cada camada do PhotoClone atua como um quadro (frame) individual da animação.</p>
+				<div class="card-steps">
+					<div class="card-steps-title">📋 Como usar passo a passo:</div>
+					<ol class="steps-list">
+						<li>Crie múltiplas camadas representando cada momento ou pose do movimento.</li>
+						<li>Selecione a ferramenta <strong>Animation</strong> na barra lateral esquerda.</li>
+						<li>Ajuste o tempo de exibição entre quadros (delay em ms) e a repetição (Loop).</li>
+						<li>Pré-visualize a animação em tempo real e exporte como <strong>GIF Animado</strong>!</li>
+					</ol>
+				</div>
+				<div class="card-tip">
+					💡 <strong>Dica Pro:</strong> Mantenha a mesma ordem das camadas de baixo para cima para controlar a linha do tempo do GIF.
+				</div>
+			</article>
+
+			<!-- CARD: Distorção e Deformação (Bulge & Pinch) -->
+			<article class="tutorial-card" data-category="pintura" data-keywords="deformar distorcer bulge pinch olho peixe caricatura lente deformacao">
+				<div class="card-top">
+					<div class="card-header-left">
+						<div class="card-icon">🔮</div>
+						<div>
+							<div class="card-category">Pintura & Desenho</div>
+							<h2 class="card-title">Distorção (Bulge & Pinch)</h2>
+						</div>
+					</div>
+					<div class="card-shortcut">Tool</div>
+				</div>
+				<p class="card-desc">Aplica deformações circulares de lente (efeito olho de peixe ou contração/expansão) para retoques, caricaturas ou efeitos ópticos.</p>
+				<div class="card-steps">
+					<div class="card-steps-title">📋 Como usar passo a passo:</div>
+					<ol class="steps-list">
+						<li>Selecione a ferramenta <strong>Bulge/Pinch</strong> na barra de ferramentas.</li>
+						<li>Defina o <strong>Raio</strong> do efeito e a <strong>Força</strong> (positiva para expandir / negativa para contrair).</li>
+						<li>Clique sobre a parte da foto que deseja deformar.</li>
+					</ol>
+				</div>
+				<div class="card-tip">
+					💡 <strong>Dica Pro:</strong> Use valores suaves de força para fazer ajustes corporais ou sutis aumentos de volume em detalhes.
+				</div>
+			</article>
+
+			<!-- CARD: Biblioteca de Mídia e Imagens Web (Media) -->
+			<article class="tutorial-card" data-category="formas" data-keywords="media biblioteca fotos banco imagens unsplash clipart icones buscar internet">
+				<div class="card-top">
+					<div class="card-header-left">
+						<div class="card-icon">🌐</div>
+						<div>
+							<div class="card-category">Formas & Texto</div>
+							<h2 class="card-title">Biblioteca de Mídias & Ícones</h2>
+						</div>
+					</div>
+					<div class="card-shortcut">Media</div>
+				</div>
+				<p class="card-desc">Busque e insira fotografias profissionais gratuitas em alta resolução e ícones vetoriais diretamente no seu projeto sem sair do editor.</p>
+				<div class="card-steps">
+					<div class="card-steps-title">📋 Como usar passo a passo:</div>
+					<ol class="steps-list">
+						<li>Selecione a ferramenta <strong>Media</strong> na barra lateral esquerda.</li>
+						<li>Digite o que está procurando na barra de busca (ex: <em>natureza, tecnologia, pessoas, logos</em>).</li>
+						<li>Clique na imagem ou ícone escolhido e ele será importado como uma nova camada pronta para uso!</li>
+					</ol>
+				</div>
+				<div class="card-tip">
+					💡 <strong>Dica Pro:</strong> Economiza tempo de pesquisa e já importa as fotos com proporção e resolução otimizadas.
+				</div>
+			</article>
+
+			<!-- CARD: Pincel Dessaturador (Color Splash) -->
+			<article class="tutorial-card" data-category="pintura" data-keywords="desaturate dessaturar preto branco color splash esponja cor isolada">
+				<div class="card-top">
+					<div class="card-header-left">
+						<div class="card-icon">🧽</div>
+						<div>
+							<div class="card-category">Pintura & Desenho</div>
+							<h2 class="card-title">Pincel Dessaturador (Color Splash)</h2>
+						</div>
+					</div>
+					<div class="card-shortcut">Tool</div>
+				</div>
+				<p class="card-desc">Remove as cores apenas nas regiões por onde o pincel passa, permitindo criar o famoso efeito de manter um elemento colorido e o resto em P&B.</p>
+				<div class="card-steps">
+					<div class="card-steps-title">📋 Como usar passo a passo:</div>
+					<ol class="steps-list">
+						<li>Selecione a ferramenta <strong>Desaturate</strong>.</li>
+						<li>Regule o tamanho e dureza do pincel.</li>
+						<li>Pinte sobre o fundo ou as áreas da imagem que devem se tornar monocromáticas.</li>
+					</ol>
+				</div>
+				<div class="card-tip">
+					💡 <strong>Dica Pro:</strong> Crie um visual elegante em retratos mantendo apenas os olhos ou roupas coloridas.
+				</div>
+			</article>
+
+			<!-- CARD: Preenchimento com Reconhecimento de Conteúdo -->
+			<article class="tutorial-card" data-category="selecao" data-keywords="content fill preenchimento inteligente apagar objeto reconstruir fundo">
+				<div class="card-top">
+					<div class="card-header-left">
+						<div class="card-icon">🧩</div>
+						<div>
+							<div class="card-category">Seleção & Corte</div>
+							<h2 class="card-title">Preenchimento Inteligente (Content Fill)</h2>
+						</div>
+					</div>
+					<div class="card-shortcut">Tools Menu</div>
+				</div>
+				<p class="card-desc">Remove objetos selecionados reconstruindo a textura do fundo a partir dos pixels ao redor (grama, céu, areia, paredes).</p>
+				<div class="card-steps">
+					<div class="card-steps-title">📋 Como usar passo a passo:</div>
+					<ol class="steps-list">
+						<li>Crie uma seleção envolta do objeto com a ferramenta <strong>Lasso</strong> ou <strong>Selection</strong>.</li>
+						<li>Acesse <strong>Ferramentas ➔ Content Fill</strong>.</li>
+						<li>O algoritmo analisa o entorno e preenche a área selecionada de forma contínua e sem cortes aparentes.</li>
+					</ol>
+				</div>
+				<div class="card-tip">
+					💡 <strong>Dica Pro:</strong> Deixe uma pequena margem em volta do objeto selecionado para o algoritmo analisar melhor a textura ao redor.
+				</div>
+			</article>
+
+			<!-- CARD: Colar Direto da Web / Print Screen -->
+			<article class="tutorial-card" data-category="exportar" data-keywords="colar paste print screen copiar web clipboard print tela">
+				<div class="card-top">
+					<div class="card-header-left">
+						<div class="card-icon">📋</div>
+						<div>
+							<div class="card-category">Salvar & Exportar</div>
+							<h2 class="card-title">Colar da Web & Print Screen</h2>
+						</div>
+					</div>
+					<div class="card-shortcut">Ctrl+V</div>
+				</div>
+				<p class="card-desc">Copie qualquer imagem na web ou tire um Print Screen da sua tela e cole direto no PhotoClone sem precisar salvar arquivo no disco.</p>
+				<div class="card-steps">
+					<div class="card-steps-title">📋 Como usar passo a passo:</div>
+					<ol class="steps-list">
+						<li>Clique com botão direito em qualquer imagem da internet e escolha <strong>Copiar Imagem</strong> (ou aperte <kbd>Print Screen</kbd>).</li>
+						<li>Abra o PhotoClone e pressione <kbd>Ctrl + V</kbd>.</li>
+						<li>A imagem será inserida instantaneamente como uma nova camada pronta para editar!</li>
+					</ol>
+				</div>
+				<div class="card-tip">
+					💡 <strong>Dica Pro:</strong> Você também pode arrastar e soltar (Drag and Drop) qualquer foto do seu computador diretamente para a tela do PhotoClone.
+				</div>
+			</article>
+
+			<!-- CARD: Gerador de Spritesheets para Games -->
+			<article class="tutorial-card" data-category="exportar" data-keywords="spritesheet sprites jogos games grade animacao textura unity godot">
+				<div class="card-top">
+					<div class="card-header-left">
+						<div class="card-icon">🎮</div>
+						<div>
+							<div class="card-category">Salvar & Exportar</div>
+							<h2 class="card-title">Gerador de Spritesheets (Games)</h2>
+						</div>
+					</div>
+					<div class="card-shortcut">Ferramentas</div>
+				</div>
+				<p class="card-desc">Organiza e exporta todas as camadas em uma folha de sprites (Spritesheet) alinhada em grade com dimensões uniformes para jogos e apps.</p>
+				<div class="card-steps">
+					<div class="card-steps-title">📋 Como usar passo a passo:</div>
+					<ol class="steps-list">
+						<li>Desenhe cada frame da animação do personagem em uma camada separada.</li>
+						<li>Acesse <strong>Ferramentas ➔ Sprites</strong>.</li>
+						<li>Configure o número de colunas, espaçamento e dimensões do sprite.</li>
+						<li>Exporte a imagem consolidada em PNG para importar diretamente na Unity, Godot ou Phaser.</li>
+					</ol>
+				</div>
+				<div class="card-tip">
+					💡 <strong>Dica Pro:</strong> Essencial para quem desenvolve jogos 2D e precisa de atlas de texturas perfeitamente alinhados.
+				</div>
+			</article>
+
+			<!-- CARD: Impressão de Alta Qualidade -->
+			<article class="tutorial-card" data-category="exportar" data-keywords="imprimir print papel margens centralizar resolucao dpi escala">
+				<div class="card-top">
+					<div class="card-header-left">
+						<div class="card-icon">🖨️</div>
+						<div>
+							<div class="card-category">Salvar & Exportar</div>
+							<h2 class="card-title">Impressão com Escala e Margens</h2>
+						</div>
+					</div>
+					<div class="card-shortcut">Arquivo</div>
+				</div>
+				<p class="card-desc">Imprima suas artes diretamente na impressora física com controle preciso de orientação, enquadramento e margens da página.</p>
+				<div class="card-steps">
+					<div class="card-steps-title">📋 Como usar passo a passo:</div>
+					<ol class="steps-list">
+						<li>Acesse <strong>Arquivo ➔ Imprimir (Print)</strong>.</li>
+						<li>Escolha a orientação (Retrato ou Paisagem) e ajuste o tamanho do papel (A4, Carta, etc.).</li>
+						<li>Defina se a imagem deve ser centralizada ou ajustada à página.</li>
+						<li>Clique em Imprimir para enviar o trabalho diretamente para a sua impressora.</li>
+					</ol>
+				</div>
+				<div class="card-tip">
+					💡 <strong>Dica Pro:</strong> Antes de imprimir fotos, use a ferramenta <strong>Upscale 2x (AI)</strong> para garantir que a resolução fique nítida no papel.
+				</div>
+			</article>
+
+			<!-- No Results Fallback -->
+			<div class="no-results" id="noResultsBox">
+				<div class="no-results-icon">🔎</div>
+				<h3>Nenhum tutorial encontrado</h3>
+				<p>Não encontramos nenhum recurso com o termo pesquisado. Tente palavras-chave como "corte", "fundo", "camadas" ou "filtros".</p>
+				<button type="button" class="btn-clear" id="btnClearSearch">Limpar Busca</button>
+			</div>
+
+		</div>
+
+		<!-- Keyboard Shortcuts Quick Reference -->
+		<section class="shortcuts-section" id="atalhos">
+			<h2>⌨️ Tabela Rápida de Atalhos do Teclado</h2>
+			<div style="overflow-x: auto;">
+				<table class="shortcuts-table">
+					<thead>
+						<tr>
+							<th>Ação</th>
+							<th>Atalho de Teclado</th>
+							<th>Descrição</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td><strong>Desfazer</strong></td>
+							<td><kbd>Ctrl</kbd> + <kbd>Z</kbd></td>
+							<td>Desfaz a última ação realizada na tela</td>
+						</tr>
+						<tr>
+							<td><strong>Refazer</strong></td>
+							<td><kbd>Ctrl</kbd> + <kbd>Y</kbd> ou <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Z</kbd></td>
+							<td>Refaz a ação desfeita anteriormente</td>
+						</tr>
+						<tr>
+							<td><strong>Exportar Imagem</strong></td>
+							<td><kbd>Ctrl</kbd> + <kbd>S</kbd></td>
+							<td>Abre a janela de exportação em PNG, JPG ou WEBP</td>
+						</tr>
+						<tr>
+							<td><strong>Exportar para WhatsApp / Redes</strong></td>
+							<td><kbd>Alt</kbd> + <kbd>S</kbd></td>
+							<td>Exporta a imagem comprimida e ultra-leve sem perder nitidez</td>
+						</tr>
+						<tr>
+							<td><strong>Salvar Projeto</strong></td>
+							<td><kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>S</kbd></td>
+							<td>Salva o projeto em formato JSON com todas as camadas</td>
+						</tr>
+						<tr>
+							<td><strong>Abrir Arquivo</strong></td>
+							<td><kbd>Ctrl</kbd> + <kbd>O</kbd></td>
+							<td>Carrega imagens ou projetos do seu computador</td>
+						</tr>
+						<tr>
+							<td><strong>Duplicar Camada</strong></td>
+							<td><kbd>Ctrl</kbd> + <kbd>J</kbd></td>
+							<td>Duplica a camada selecionada instantaneamente</td>
+						</tr>
+						<tr>
+							<td><strong>Clonar ao Arrastar</strong></td>
+							<td><kbd>Alt</kbd> + Arrastar</td>
+							<td>Cria uma cópia da camada onde você soltar o mouse</td>
+						</tr>
+						<tr>
+							<td><strong>Copiar Camada</strong></td>
+							<td><kbd>Ctrl</kbd> + <kbd>C</kbd></td>
+							<td>Copia a camada ou seleção ativa para a área de transferência</td>
+						</tr>
+						<tr>
+							<td><strong>Colar</strong></td>
+							<td><kbd>Ctrl</kbd> + <kbd>V</kbd></td>
+							<td>Cola a imagem como uma nova camada</td>
+						</tr>
+						<tr>
+							<td><strong>Selecionar Tudo</strong></td>
+							<td><kbd>Ctrl</kbd> + <kbd>A</kbd></td>
+							<td>Seleciona toda a área do documento</td>
+						</tr>
+						<tr>
+							<td><strong>Ferramenta Mover (Select)</strong></td>
+							<td><kbd>V</kbd></td>
+							<td>Ativa a ferramenta de seleção e movimento</td>
+						</tr>
+						<tr>
+							<td><strong>Pincel (Brush)</strong></td>
+							<td><kbd>B</kbd></td>
+							<td>Ativa a ferramenta de pincel suave</td>
+						</tr>
+						<tr>
+							<td><strong>Borracha (Erase)</strong></td>
+							<td><kbd>E</kbd></td>
+							<td>Ativa a ferramenta de borracha</td>
+						</tr>
+						<tr>
+							<td><strong>Varinha Mágica</strong></td>
+							<td><kbd>W</kbd></td>
+							<td>Ativa a ferramenta de seleção por cor</td>
+						</tr>
+						<tr>
+							<td><strong>Texto (Text)</strong></td>
+							<td><kbd>T</kbd></td>
+							<td>Ativa a ferramenta de inserção de texto</td>
+						</tr>
+						<tr>
+							<td><strong>Ajustar Tamanho do Pincel</strong></td>
+							<td><kbd>[</kbd> e <kbd>]</kbd></td>
+							<td>Diminui ou aumenta o diâmetro do pincel/borracha</td>
+						</tr>
+						<tr>
+							<td><strong>Mover Tela (Pan)</strong></td>
+							<td><kbd>Espaço</kbd> + Arrastar</td>
+							<td>Navega livremente pela tela com zoom aplicado</td>
+						</tr>
+						<tr>
+							<td><strong>Central de Formas, Emojis & Badges</strong></td>
+							<td><kbd>H</kbd></td>
+							<td>Abre a biblioteca de formas, emojis, ícones e badges com busca</td>
+						</tr>
+						<tr>
+							<td><strong>Novo Arquivo / Preset</strong></td>
+							<td><kbd>Ctrl</kbd> + <kbd>N</kbd></td>
+							<td>Abre a janela de criação com tamanhos prontos para redes e impressão</td>
+						</tr>
+						<tr>
+							<td><strong>Importar como Camada</strong></td>
+							<td><kbd>O</kbd></td>
+							<td>Insere uma ou mais imagens dentro do projeto atual</td>
+						</tr>
+						<tr>
+							<td><strong>Zoom In / Zoom Out</strong></td>
+							<td><kbd>+</kbd> / <kbd>-</kbd> ou <kbd>Scroll do Mouse</kbd></td>
+							<td>Aproxima ou afasta a visualização da imagem</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</section>
+
+	</main>
+
+	<!-- Footer -->
+	<footer>
+		<p>© 2026 <strong>PhotoClone Pro</strong> — Desenvolvido por <a href="https://4u.ia.br" target="_blank">4U.IA.BR</a>. Todos os direitos reservados.</p>
+	</footer>
+
+	<!-- Interactive Search & Filtering Logic -->
+	<script>
+		document.addEventListener('DOMContentLoaded', () => {
+			const searchInput = document.getElementById('tutorialSearch');
+			const filterPills = document.querySelectorAll('.filter-pill');
+			const cards = document.querySelectorAll('.tutorial-card');
+			const resultsCount = document.getElementById('resultsCount');
+			const activeFilterLabel = document.getElementById('activeFilterLabel');
+			const noResultsBox = document.getElementById('noResultsBox');
+			const btnClearSearch = document.getElementById('btnClearSearch');
+
+			let currentCategory = 'all';
+
+			// Filter & Search Engine Function
+			function applyFilters() {
+				const query = searchInput.value.trim().toLowerCase();
+				let visibleCount = 0;
+
+				cards.forEach(card => {
+					const cardCategory = card.getAttribute('data-category');
+					const cardTitle = card.querySelector('.card-title').textContent.toLowerCase();
+					const cardDesc = card.querySelector('.card-desc').textContent.toLowerCase();
+					const cardKeywords = card.getAttribute('data-keywords') || '';
+					const cardText = card.textContent.toLowerCase();
+
+					const matchesCategory = (currentCategory === 'all' || cardCategory === currentCategory);
+					const matchesQuery = query === '' || 
+						cardTitle.includes(query) || 
+						cardDesc.includes(query) || 
+						cardKeywords.includes(query) || 
+						cardText.includes(query);
+
+					if (matchesCategory && matchesQuery) {
+						card.style.display = 'flex';
+						visibleCount++;
+					} else {
+						card.style.display = 'none';
+					}
+				});
+
+				// Update counter
+				const t = tutI18n[currentLang] || tutI18n.pt;
+				if (query === '' && currentCategory === 'all') {
+					resultsCount.textContent = t.statsAll;
+				} else if (visibleCount === 1) {
+					resultsCount.textContent = t.statsSingle;
+				} else {
+					resultsCount.textContent = t.statsCount(visibleCount, cards.length);
+				}
+
+				// Toggle No Results Box
+				if (visibleCount === 0) {
+					noResultsBox.style.display = 'block';
+					const noTitle = noResultsBox.querySelector('h3');
+					const noDesc = noResultsBox.querySelector('p');
+					if (noTitle) noTitle.textContent = t.noResultsTitle;
+					if (noDesc) noDesc.textContent = t.noResultsDesc;
+				} else {
+					noResultsBox.style.display = 'none';
+				}
+			}
+
+			// Search input event
+			searchInput.addEventListener('input', applyFilters);
+
+			// Category filter pills
+			filterPills.forEach(pill => {
+				pill.addEventListener('click', () => {
+					filterPills.forEach(p => p.classList.remove('active'));
+					pill.classList.add('active');
+					currentCategory = pill.getAttribute('data-category');
+					const t = tutI18n[currentLang] || tutI18n.pt;
+					activeFilterLabel.textContent = `${t.activeCatPrefix}${pill.textContent.trim()}`;
+					applyFilters();
+				});
+			});
+
+			// Clear button
+			if (btnClearSearch) {
+				btnClearSearch.addEventListener('click', () => {
+					searchInput.value = '';
+					currentCategory = 'all';
+					filterPills.forEach(p => p.classList.remove('active'));
+					filterPills[0].classList.add('active');
+					const t = tutI18n[currentLang] || tutI18n.pt;
+					activeFilterLabel.textContent = `${t.activeCatPrefix}${filterPills[0].textContent.trim()}`;
+					applyFilters();
+					searchInput.focus();
+				});
+			}
+
+			// Global keyboard shortcut to focus search (/ or Ctrl+K)
+			document.addEventListener('keydown', (e) => {
+				if ((e.key === '/' || (e.ctrlKey && e.key.toLowerCase() === 'k')) && document.activeElement !== searchInput) {
+					e.preventDefault();
+					searchInput.focus();
+					searchInput.select();
+				}
+			});
+		});
+
+		
+		const cardsDataEN = [
+  {
+    "cat": "Selection & Crop",
+    "title": "Crop Tool",
+    "desc": "Crop the active image area, adjust framing, and freely reposition the crop selection by dragging with the mouse.",
+    "steps_title": "Step-by-step how to use:",
+    "steps": [
+      "Click on the <strong>Crop</strong> tool in the left sidebar.",
+      "Click and drag over the canvas to draw your crop bounding box.",
+      "<strong>Free repositioning:</strong> Hover over the center green area (cursor becomes ✥), then click and drag to move the entire crop box!",
+      "Resize by dragging any of the 8 white boundary handles.",
+      "Click the <strong>Crop</strong> button in the top toolbar to apply the crop."
+    ],
+    "tip": "💡 <strong>Pro Tip:</strong> Hold <kbd>Ctrl</kbd> or <kbd>Cmd</kbd> while dragging to constrain the crop to the original canvas aspect ratio."
+  },
+  {
+    "cat": "Selection & Crop",
+    "title": "Move & Transform (Select)",
+    "desc": "The primary tool to select individual layers, drag elements on canvas, rotate, and scale images and text.",
+    "steps_title": "Advanced features:",
+    "steps": [
+      "Select the <strong>Select</strong> tool (<kbd>V</kbd>) and click on the desired layer.",
+      "<strong>Alt + Drag (Clone):</strong> Hold <kbd>Alt</kbd> and drag any layer to instantly duplicate it wherever you release the mouse!",
+      "<strong>Instant Duplicate:</strong> Press <kbd>Ctrl</kbd> + <kbd>J</kbd> to clone the active layer.",
+      "Use the bounding box handles to resize while maintaining proportions."
+    ],
+    "tip": "💡 <strong>Pro Tip:</strong> Hold <kbd>Shift</kbd> to temporarily disable smart snapping if you need completely free manual movement."
+  },
+  {
+    "cat": "Selection & Alignment",
+    "title": "Smart Snapping Magnetic Guides",
+    "desc": "Align titles, photos, icons, and shapes in seconds with dynamic magenta snapping guide lines.",
+    "steps_title": "How it works:",
+    "steps": [
+      "When dragging any element with the <strong>Select</strong> tool (<kbd>V</kbd>), PhotoClone automatically detects key alignment points.",
+      "<strong>Canvas Center:</strong> A magenta guide appears whenever an object reaches the exact horizontal or vertical center of your artwork.",
+      "<strong>Inter-Layer Alignment:</strong> Smart lines appear when your element aligns with the start, center, or edges of other layers in the canvas."
+    ],
+    "tip": "💡 <strong>Pro Tip:</strong> Smart snapping is enabled by default. Hold <kbd>Shift</kbd> whenever you want to bypass magnetic snapping."
+  },
+  {
+    "cat": "Selection & Cutout",
+    "title": "Magic Wand Tool",
+    "desc": "Automatically select contiguous areas of similar color based on your configured tolerance threshold.",
+    "steps_title": "Step-by-step how to use:",
+    "steps": [
+      "Select the <strong>Magic Wand</strong> tool (<kbd>W</kbd>).",
+      "Adjust <strong>Tolerance</strong> in the top toolbar (default: 40).",
+      "Click on the image color you want to isolate to generate the selection outline.",
+      "Press <kbd>Delete</kbd> to erase or apply filters directly to the selected region."
+    ],
+    "tip": "💡 <strong>Pro Tip:</strong> Increase tolerance for gradients and lower it for crisp edges and solid color backgrounds."
+  },
+  {
+    "cat": "Selection & Cutout",
+    "title": "Freehand & Polygonal Lasso",
+    "desc": "Select and cut out irregular or organic shapes by drawing freehand contours or plotting polygon vertices.",
+    "steps_title": "Step-by-step how to use:",
+    "steps": [
+      "Select the <strong>Lasso</strong> tool (<kbd>L</kbd>).",
+      "Click and outline around the desired subject with your mouse or stylus.",
+      "Close the path at the starting point to activate the selection mask."
+    ],
+    "tip": "💡 <strong>Pro Tip:</strong> Ideal for cutting out models and products with intricate silhouettes that color-based wand selection cannot handle."
+  },
+  {
+    "cat": "Artificial Intelligence",
+    "title": "AI Background Removal",
+    "desc": "Isolate products, models, and vehicles with automatic AI computer vision cutout in 3 seconds.",
+    "steps_title": "Step-by-step how to use:",
+    "steps": [
+      "Select the image layer in the right sidebar <strong>Layers</strong> list.",
+      "Open the top menu <strong>AI Tools ➔ Remove Background (AI)</strong>.",
+      "The neural network processes the image and removes the background cleanly with transparent alpha in 3 seconds!",
+      "<strong>Alternative (Zero Credit):</strong> Use <strong>AI Tools ➔ Remove Background by Color (Click)</strong> to remove solid backgrounds instantly."
+    ],
+    "tip": "💡 <strong>Pro Tip:</strong> Transparent background is shown with a checkered pattern. Export as PNG or WEBP to preserve transparency."
+  },
+  {
+    "cat": "Artificial Intelligence",
+    "title": "Colorize Photos with AI",
+    "desc": "Restore vintage black & white family photographs into realistic, vibrant colors using deep learning.",
+    "steps_title": "Step-by-step how to use:",
+    "steps": [
+      "Open your vintage black and white photo in PhotoClone.",
+      "Go to <strong>AI Tools ➔ Colorize (AI)</strong> in the top menu.",
+      "Wait a few seconds while the AI restores skin tones, skies, clothing, and textures naturally."
+    ],
+    "tip": "💡 <strong>Pro Tip:</strong> After colorizing, apply <strong>Effects ➔ Enrich (HDR)</strong> to add extra vibrancy and contrast."
+  },
+  {
+    "cat": "Artificial Intelligence",
+    "title": "Upscale 2x (Super Resolution)",
+    "desc": "Double the pixel resolution and sharpness of low quality, compressed, or blurry images using AI upscaling.",
+    "steps_title": "Step-by-step how to use:",
+    "steps": [
+      "Select the low-resolution image layer.",
+      "Click <strong>AI Tools ➔ Upscale 2x (AI)</strong> in the top menu.",
+      "The neural network reconstructs micro-details, removes pixelation artifacts, and outputs a 2x super-resolution layer."
+    ],
+    "tip": "💡 <strong>Pro Tip:</strong> Perfect for upgrading small logos, web thumbnails, or old digital photos before large-format printing."
+  },
+  {
+    "cat": "Effects & Filters",
+    "title": "Enrich (HDR Effect)",
+    "desc": "Enhance dynamic contrast, vivid colors, and details in dull, washed-out, or poorly lit photographs.",
+    "steps_title": "Step-by-step how to use:",
+    "steps": [
+      "Select your photo layer.",
+      "Open <strong>Effects ➔ Enrich</strong> (or find it inside <strong>AI Tools</strong>).",
+      "Adjust the intensity slider and click <strong>OK</strong> to reveal hidden details in shadows and highlights."
+    ],
+    "tip": "💡 <strong>Pro Tip:</strong> Give food, sunset landscapes, and real estate photography that professional punchy look in 1 click."
+  },
+  {
+    "cat": "Layers",
+    "title": "Layer Management",
+    "desc": "Organize visual elements across independent layers with custom opacity, visibility, and blending modes.",
+    "steps_title": "Step-by-step how to use:",
+    "steps": [
+      "View all project elements in the bottom-right <strong>Layers</strong> panel.",
+      "Click the <strong>[ + ]</strong> button to insert a new empty layer.",
+      "Drag layers up or down in the stack to reorder visual depth (top layer renders in front).",
+      "Double-click any layer name to rename it for clear organization.",
+      "Toggle the <strong>👁️ Eye</strong> icon to show or hide a layer."
+    ],
+    "tip": "💡 <strong>Pro Tip:</strong> Use Blending Modes (Multiply, Screen, Overlay) to blend textures, lighting, and colors creatively."
+  },
+  {
+    "cat": "Painting & Drawing",
+    "title": "Brush & Pencil Tools",
+    "desc": "Freehand painting and drawing with adjustable size, tip hardness, transparency, and blending colors.",
+    "steps_title": "Step-by-step how to use:",
+    "steps": [
+      "Click the <strong>Brush</strong> (<kbd>B</kbd>) or <strong>Pencil</strong> (<kbd>P</kbd>) tool in the sidebar.",
+      "Pick your color in the <strong>Colors</strong> panel on the right.",
+      "Configure <strong>Size</strong>, <strong>Hardness</strong>, and <strong>Opacity</strong> in the top toolbar.",
+      "Paint smoothly across the active layer."
+    ],
+    "tip": "💡 <strong>Pro Tip:</strong> Always paint on a separate layer so you can erase, reposition, or apply layer effects independently."
+  },
+  {
+    "cat": "Painting & Retouching",
+    "title": "Clone Stamp Tool",
+    "desc": "Sample pixels from a source region to retouch skin, eliminate blemishes, or erase unwanted background objects.",
+    "steps_title": "Step-by-step how to use:",
+    "steps": [
+      "Select the <strong>Clone Stamp</strong> tool (<kbd>S</kbd>).",
+      "Hold <kbd>Alt</kbd> and click on the clean texture you wish to clone as the source.",
+      "Release <kbd>Alt</kbd> and paint over the object or blemish you want to cover."
+    ],
+    "tip": "💡 <strong>Pro Tip:</strong> Use soft brush edges (Hardness: 20%) and resample source points frequently for seamless retouching."
+  },
+  {
+    "cat": "Painting & Fill",
+    "title": "Paint Bucket & Gradients",
+    "desc": "Fill background areas with solid colors or smooth linear gradients across your design.",
+    "steps_title": "Step-by-step how to use:",
+    "steps": [
+      "Select the <strong>Paint Bucket</strong> (<kbd>G</kbd>) or <strong>Gradient</strong> tool.",
+      "For solid fill: click on any area to fill with the active palette color.",
+      "For gradients: click and drag across the canvas to define direction, start, and end points."
+    ],
+    "tip": "💡 <strong>Pro Tip:</strong> Create glowing cyber gradients by setting bright cyan and magenta stops with soft angle transitions."
+  },
+  {
+    "cat": "Shapes & Text",
+    "title": "Vector Text & Google Fonts",
+    "desc": "Create vector typography using hundreds of built-in system fonts and popular Google Fonts.",
+    "steps_title": "Step-by-step how to use:",
+    "steps": [
+      "Click the <strong>Text</strong> tool (<kbd>T</kbd>) in the left sidebar.",
+      "Click anywhere on the canvas to insert a new text layer.",
+      "Type your copy and customize font family, size, weight, letter spacing, and line height in the <strong>Details</strong> panel."
+    ],
+    "tip": "💡 <strong>Pro Tip:</strong> Text remains 100% vector and editable anytime — double-click the layer to edit words without loss of quality."
+  },
+  {
+    "cat": "Typography & Text",
+    "title": "How to Add Fonts [Add Font...]",
+    "desc": "Instantly import any of the 1,500+ free Google Fonts into your active project.",
+    "steps_title": "Step-by-step how to use:",
+    "steps": [
+      "Select a text layer or activate the <strong>Text</strong> (<kbd>T</kbd>) tool.",
+      "In the right sidebar <strong>Details</strong> panel, click the <strong>Font Family</strong> dropdown.",
+      "Scroll down to the bottom of the list and click <strong>[Add Font...]</strong>.",
+      "Browse through popular Google Fonts (Bebas Neue, Montserrat, Dancing Script, Anton, Caveat, Cinzel) or type any custom Google Font name.",
+      "Click <strong>Add Font</strong>: the new font is loaded from Google CDN and applied immediately to your text!"
+    ],
+    "tip": "💡 <strong>Pro Tip:</strong> You can also install custom local fonts on your computer (.ttf / .otf) and PhotoClone will detect them in the system font list."
+  },
+  {
+    "cat": "Stock Photos Hub",
+    "title": "Free High-Resolution Stock Photos",
+    "desc": "Access millions of commercial-use 4K photography (CC0 / Unsplash) directly inside the editor in 1 click.",
+    "steps_title": "Step-by-step how to use:",
+    "steps": [
+      "Open the top menu <strong>File ➔ Stock Photos (Free)</strong> or click the 🖼️ icon in the left toolbar.",
+      "Click on one of the 16 balanced category pills (🍔 Burgers, 🍕 Pizza, 👔 Business, 💻 Tech, 🏋️ Fitness, 🏠 Real Estate, 🌴 Beaches, ✨ Neon).",
+      "Or type any keyword in Portuguese or English into the instant search bar.",
+      "Click on any photo in the results: it is automatically downloaded in high resolution and inserted onto your canvas as a new layer!"
+    ],
+    "tip": "💡 <strong>Pro Tip:</strong> All photos are licensed for free commercial and personal use (Unsplash / Pixabay / Pexels), zero royalties required."
+  },
+  {
+    "cat": "Projects & Security",
+    "title": "Recent Projects & Auto-Save",
+    "desc": "Never lose your artwork due to sudden browser crashes or power outages. PhotoClone autosaves locally every 4 seconds.",
+    "steps_title": "Step-by-step how to use:",
+    "steps": [
+      "<strong>Automatic Saving:</strong> Every change you make is quietly saved in your browser's private storage (IndexedDB) every 4 seconds.",
+      "<strong>Restore Previous Sessions:</strong> If you accidentally close your browser, simply reopen PhotoClone — your full canvas, layers, and history are restored automatically!",
+      "<strong>Recent Projects Hub:</strong> Go to <strong>File ➔ Recent Projects</strong> to view thumbnails of up to 25 past projects and switch between them with 1 click.",
+      "<strong>Full Privacy:</strong> All project data stays 100% on your local machine, never sent to external servers."
+    ],
+    "tip": "💡 <strong>Pro Tip:</strong> You can also export your project as a permanent <code>.JSON</code> file via <kbd>Ctrl+Shift+S</kbd> to store on USB drives or share with teammates."
+  },
+  {
+    "cat": "Application & Access",
+    "title": "Install App on Desktop & Mobile (PWA)",
+    "desc": "Run PhotoClone Pro as a native desktop or mobile program with fast launch and offline editing capability.",
+    "steps_title": "How to install in 1 click:",
+    "steps": [
+      "<strong>Computer (Chrome / Edge / Brave):</strong> Click the <strong>📲 Install App</strong> button in the top menu bar, then confirm <strong>Install</strong>.",
+      "<strong>Android:</strong> Tap the <strong>📲 Install App</strong> button or open browser menu (3 dots) ➔ <strong>Add to Home screen</strong>.",
+      "<strong>iPhone / iPad (Safari):</strong> Tap the <strong>Share</strong> button (box with upward arrow) ➔ select <strong>Add to Home Screen</strong>.",
+      "The app opens in standalone windowed mode without browser address bars, complete with offline asset caching!"
+    ],
+    "tip": "💡 <strong>Pro Tip:</strong> You can pin PhotoClone to your Windows Taskbar or Mac Dock for instant 1-click startup anytime."
+  },
+  {
+    "cat": "Shapes & Text",
+    "title": "1-Click Quick Text Styles",
+    "desc": "Add modern drop shadows, crisp stroke outlines, neon glow, and background highlight boxes in 1 click.",
+    "steps_title": "Available 1-click styles:",
+    "steps": [
+      "Select any text layer on your canvas.",
+      "Look at the <strong>Details</strong> panel on the right sidebar under <strong>Quick Styles (1-Click)</strong>.",
+      "<strong>Drop Shadow:</strong> Adds deep, soft directional shadow for clean readability over busy photos.",
+      "<strong>Stroke Outline:</strong> Renders a crisp high-contrast border around your letters.",
+      "<strong>Neon Glow:</strong> Adds an intense, radiant cyberpunk glow effect.",
+      "<strong>Background Box:</strong> Wraps text in a solid high-visibility highlight badge."
+    ],
+    "tip": "💡 <strong>Pro Tip:</strong> Stack multiple styles simultaneously (e.g. Stroke + Shadow) to create eye-catching advertising headlines."
+  },
+  {
+    "cat": "Shapes & Elements",
+    "title": "QR Code & PIX Generator",
+    "desc": "Generate official Central Bank PIX payment codes (BR Code EMV), direct WhatsApp links, and Wi-Fi credentials.",
+    "steps_title": "Step-by-step how to use:",
+    "steps": [
+      "Open <strong>Tools ➔ QR Code Generator</strong> (or find it under <strong>Shapes</strong>).",
+      "Choose your QR code type: <strong>PIX Payment (BACEN)</strong>, <strong>WhatsApp Link</strong>, <strong>Wi-Fi Login</strong>, or <strong>Custom URL</strong>.",
+      "Fill in the details (PIX key, receiver name, amount, or phone number).",
+      "Choose colors, error correction level, and optional center logo icon.",
+      "Click <strong>Insert into Canvas</strong> — the QR code is generated as a sharp vector layer ready for scanning!"
+    ],
+    "tip": "💡 <strong>Pro Tip:</strong> Always test scan the generated QR code with your phone banking app before sending artwork to print."
+  },
+  {
+    "cat": "Shapes & Elements",
+    "title": "Shapes, Elements & Frames Hub",
+    "desc": "Full Canva-style hub featuring geometric shapes, promo badges (50% OFF, Free Shipping), social media icons, device mockups (iPhone, MacBook, Polaroid), and arrows in 1 click.",
+    "steps_title": "HOW TO USE STEP BY STEP:",
+    "steps": [
+      "Click the <strong>Shapes (H)</strong> tool in the left toolbar or press the <strong>H</strong> key.",
+      "Explore the tabs: <em>📐 Shapes</em>, <em>🛍️ Sales & Badges</em>, <em>📱 Social & Contact</em>, <em>🖼️ Frames & Mockups</em>, <em>🏹 Arrows & Doodles</em>, or <em>💥 Pop & Emojis</em>.",
+      "Or search instantly (e.g. <em>'50%'</em>, <em>'iphone'</em>, <em>'whatsapp'</em>, <em>'star'</em>).",
+      "Click any element to insert it immediately as a sharp, transparent vector layer on your canvas!"
+    ],
+    "tip": "💡 <strong>Pro Tip:</strong> In the <strong>🖼️ Frames</strong> tab, clicking iPhone or Polaroid automatically clips and fits your active photo with studio realism!"
+  },
+  {
+    "cat": "Image & Dimensions",
+    "title": "Document Dimension Presets",
+    "desc": "Instant canvas sizing presets for Instagram Feed, Stories, Reels, TikTok, YouTube Thumbnails, A4, and 4K.",
+    "steps_title": "Recommended presets:",
+    "steps": [
+      "Go to <strong>File ➔ New</strong> to open the dimension preset chooser.",
+      "<strong>Instagram Feed:</strong> Square (1080x1080) or Portrait (1080x1350).",
+      "<strong>Stories / Reels / TikTok:</strong> Vertical Full Screen (1080x1920).",
+      "<strong>YouTube Thumbnail:</strong> Widescreen 16:9 (1280x720).",
+      "<strong>Print Media:</strong> A4 Sheet (2480x3508 @ 300 DPI) or Business Card.",
+      "Click any preset to create a perfectly dimensioned canvas instantly."
+    ],
+    "tip": "💡 <strong>Pro Tip:</strong> Portrait 1080x1350 takes up more vertical screen space in the Instagram mobile feed, generating higher engagement."
+  },
+  {
+    "cat": "Layers & Tabs",
+    "title": "Multi-Document Project Tabs",
+    "desc": "Work on multiple art projects simultaneously in separate workspace tabs with independent layers and histories.",
+    "steps_title": "How it works:",
+    "steps": [
+      "Notice the project tab bar at the top of the canvas.",
+      "Click the <strong>[ + ]</strong> button on the tab bar to open a new blank project document.",
+      "Switch between open documents with 1 click without losing your layers or undo histories in other tabs.",
+      "Copy layers from one project tab and paste them directly into another tab (<kbd>Ctrl+C</kbd> ➔ <kbd>Ctrl+V</kbd>)!"
+    ],
+    "tip": "💡 <strong>Pro Tip:</strong> Click the <strong>✖</strong> on any tab to close it when finished."
+  },
+  {
+    "cat": "Save & Export",
+    "title": "Opening vs Inserting as Layer",
+    "desc": "Understand the difference between opening a file as a new master canvas versus inserting it as an overlay layer.",
+    "steps_title": "Step-by-step how to use:",
+    "steps": [
+      "<strong>File ➔ Open:</strong> Replaces current workspace canvas or creates a new tab with the exact pixel dimensions of the loaded image.",
+      "<strong>File ➔ Open as Layer:</strong> Inserts the chosen image directly onto your active canvas as a new independent layer, keeping current canvas size intact.",
+      "<strong>Drag & Drop:</strong> Dragging an image from your desktop onto the canvas inserts it instantly as a new layer."
+    ],
+    "tip": "💡 <strong>Pro Tip:</strong> Use <strong>Open</strong> when starting a photo retouching project, and <strong>Open as Layer</strong> when adding logos, stickers, or secondary photos."
+  },
+  {
+    "cat": "Effects & Filters",
+    "title": "Instagram-Style Photo Filters",
+    "desc": "Apply instant photographic color grading presets like Clarendon, 1977, Gingham, Lo-Fi, and Retro Sepia.",
+    "steps_title": "Step-by-step how to use:",
+    "steps": [
+      "Select your photo layer in the Layers list.",
+      "Open <strong>Effects ➔ Instagram Filters</strong> in the top menu.",
+      "Preview filter styles (Clarendon, Inkwell, Aden, Toaster, Valencia, Gingham).",
+      "Click to apply your favorite photographic tone instantly."
+    ],
+    "tip": "💡 <strong>Pro Tip:</strong> Lower layer opacity slightly after applying a filter to create a subtler, more organic color grade."
+  },
+  {
+    "cat": "Effects & Filters",
+    "title": "Artistic & Painting Filters",
+    "desc": "Transform standard photos into oil paintings, pencil sketches, mosaic tiles, blueprints, or night vision.",
+    "steps_title": "Available effects:",
+    "steps": [
+      "Select your target image layer.",
+      "Explore the <strong>Effects</strong> menu: <strong>Oil Painting</strong>, <strong>Pencil Drawing</strong>, <strong>Mosaic</strong>, <strong>Blueprint</strong>, <strong>Night Vision</strong>.",
+      "Adjust effect parameters (brush radius, sketch density, tile size) and click <strong>OK</strong>."
+    ],
+    "tip": "💡 <strong>Pro Tip:</strong> Oil painting effect smooths digital noise and gives portraits a classic hand-painted canvas appearance."
+  },
+  {
+    "cat": "Effects & Filters",
+    "title": "Tilt-Shift Miniature Effect",
+    "desc": "Simulate selective focus blur and shallow depth-of-field to make cityscapes and scenery look like miniature toy models.",
+    "steps_title": "Step-by-step how to use:",
+    "steps": [
+      "Select a high-angle landscape or cityscape photo layer.",
+      "Go to <strong>Effects ➔ Tilt Shift</strong>.",
+      "Adjust the focal band position, gradient spread, and blur intensity.",
+      "Click <strong>OK</strong> to produce the miniature toy effect."
+    ],
+    "tip": "💡 <strong>Pro Tip:</strong> Combine Tilt-Shift with slightly boosted saturation (+20%) to amplify the toy miniature look."
+  },
+  {
+    "cat": "Effects & Filters",
+    "title": "Noise Reduction (Denoise)",
+    "desc": "Clean up digital ISO grain, sensor noise, and compression artifacts from nighttime and low-light photos.",
+    "steps_title": "Step-by-step how to use:",
+    "steps": [
+      "Select your grainy photo layer.",
+      "Open <strong>Effects ➔ Denoise</strong> (or find it in <strong>AI Tools</strong>).",
+      "Adjust the noise reduction radius and threshold sliders until grain disappears while keeping main contours sharp.",
+      "Click <strong>OK</strong> to apply."
+    ],
+    "tip": "💡 <strong>Pro Tip:</strong> Apply Denoise before applying sharpening or HDR filters to avoid amplifying background noise."
+  },
+  {
+    "cat": "Image & Canvas",
+    "title": "Resize Image vs Canvas Size",
+    "desc": "Understand the difference between scaling image pixel dimensions and expanding outer canvas borders.",
+    "steps_title": "How it works:",
+    "steps": [
+      "<strong>Image ➔ Resize (Scale):</strong> Scales up or down all pixels and layers proportionally across your artwork.",
+      "<strong>Image ➔ Canvas Size:</strong> Expands or shrinks the outer canvas boundaries (adding extra background margin or clipping borders) without resizing existing layers."
+    ],
+    "tip": "💡 <strong>Pro Tip:</strong> Use <strong>Canvas Size</strong> whenever you want to add outer framing margins or white borders around your design."
+  },
+  {
+    "cat": "Layers & History",
+    "title": "Visual History Timeline (Time Travel)",
+    "desc": "Navigate through your entire editing timeline and jump back to any previous state with 1 click.",
+    "steps_title": "Step-by-step how to use:",
+    "steps": [
+      "Click on the <strong>History</strong> tab in the right sidebar.",
+      "Browse through the chronological list of every tool used, layer added, and filter applied.",
+      "Click on any past action in the list: the canvas instantly rolls back to that exact state in time!",
+      "Perform a new action to branch from that state or continue editing seamlessly."
+    ],
+    "tip": "💡 <strong>Pro Tip:</strong> You can also use standard shortcuts <kbd>Ctrl+Z</kbd> (Undo) and <kbd>Ctrl+Y</kbd> (Redo) at any time."
+  },
+  {
+    "cat": "Image & Orientation",
+    "title": "Rotate & Flip (Mirror)",
+    "desc": "Rotate the canvas by 90°/180° or flip individual layers horizontally and vertically in 1 click.",
+    "steps_title": "Step-by-step how to use:",
+    "steps": [
+      "To flip or rotate a single layer: Select layer ➔ <strong>Layer ➔ Flip Horizontal</strong> or <strong>Rotate</strong>.",
+      "To flip or rotate the entire project: <strong>Image ➔ Rotate 90° Clockwise</strong> or <strong>Flip Canvas</strong>."
+    ],
+    "tip": "💡 <strong>Pro Tip:</strong> Flipping portraits horizontally often improves visual balance when creating split banner designs."
+  },
+  {
+    "cat": "Save & Export",
+    "title": "Save, Export & File Formats",
+    "desc": "Choose the optimal file format for web publishing, printing, transparency, or editable JSON backups.",
+    "steps_title": "Supported formats:",
+    "steps": [
+      "Press <kbd>Ctrl</kbd> + <kbd>S</kbd> or open <strong>File ➔ Save As</strong>.",
+      "<strong>PNG:</strong> Best for graphics with transparent backgrounds, logos, and crisp text.",
+      "<strong>JPG / JPEG:</strong> Best for photos and general social media posts.",
+      "<strong>WEBP:</strong> Modern ultra-lightweight web format with superior compression.",
+      "<strong>SVG:</strong> Vector graphics format for icons and scalable illustrations.",
+      "<strong>JSON:</strong> PhotoClone native project file preserving all layers, text, and styles for future editing."
+    ],
+    "tip": "💡 <strong>Pro Tip:</strong> Always save an editable <code>.JSON</code> copy of complex client projects so you can modify text later."
+  },
+  {
+    "cat": "Save & Export",
+    "title": "Lossless WhatsApp & Social Export",
+    "desc": "Compress file size up to 70% while keeping 100% of visual details sharp for WhatsApp and Instagram.",
+    "steps_title": "Step-by-step how to use:",
+    "steps": [
+      "Finished your design? Press the global shortcut <kbd>Alt</kbd> + <kbd>S</kbd> (or go to <strong>File ➔ WhatsApp / Web Export</strong>).",
+      "PhotoClone optimizes image compression, color profiles, and metadata automatically in milliseconds.",
+      "Your optimized file downloads instantly, ready to share on WhatsApp groups without blurriness or compression degradation!"
+    ],
+    "tip": "💡 <strong>Pro Tip:</strong> Use <kbd>Alt+S</kbd> for all social media creative deliveries to ensure razor-sharp graphics on mobile screens."
+  },
+  {
+    "cat": "Artificial Intelligence",
+    "title": "4uLabs Unified AI Credits",
+    "desc": "Use AI background removal and upscale with unified credits recharge via instant PIX in seconds.",
+    "steps_title": "How it works:",
+    "steps": [
+      "Check your credit balance anytime at the top-right badge (💎).",
+      "Click on the badge to open the credit recharge portal.",
+      "Choose a credit pack and pay instantly with automated PIX QR Code.",
+      "Credits are credited to your account instantly upon payment confirmation."
+    ],
+    "tip": "💡 <strong>Pro Tip:</strong> Your credits are shared across the entire 4uLabs ecosystem (PhotoClone, KeepAI, and partner tools)."
+  },
+  {
+    "cat": "Image & Animation",
+    "title": "Animated GIF Creator",
+    "desc": "Create frame-by-frame animated banners and export lightweight loops directly from your project layers.",
+    "steps_title": "Step-by-step how to use:",
+    "steps": [
+      "Create separate layers for each animation frame.",
+      "Open <strong>Tools ➔ Animation (GIF)</strong> in the top menu.",
+      "Set frame delay (milliseconds), loop count, and preview the live animation.",
+      "Click <strong>Export GIF</strong> to download your animated file."
+    ],
+    "tip": "💡 <strong>Pro Tip:</strong> Keep frame count between 6 and 18 frames for optimal balance between smoothness and small file size."
+  },
+  {
+    "cat": "Painting & Distortion",
+    "title": "Bulge, Pinch & Distortion Brushes",
+    "desc": "Create caricatures, inflate or pinch image regions with visual distortion brushes.",
+    "steps_title": "Step-by-step how to use:",
+    "steps": [
+      "Select your image layer.",
+      "Go to <strong>Tools ➔ Bulge / Pinch</strong>.",
+      "Configure brush radius and distortion strength (+ for bulge / expand, - for pinch / shrink).",
+      "Click and drag over the image to distort pixels interactively."
+    ],
+    "tip": "💡 <strong>Pro Tip:</strong> Ideal for creating fun caricatures, enhancing volume, or correcting wide-angle lens distortion."
+  },
+  {
+    "cat": "Shapes & Media",
+    "title": "Online Media & Clipart Library",
+    "desc": "Search public internet repositories and insert clipart vector layers directly into your project.",
+    "steps_title": "Step-by-step how to use:",
+    "steps": [
+      "Open <strong>File ➔ Media Library</strong>.",
+      "Search for vector icons, illustrations, and transparent clipart.",
+      "Click any result to insert it as a layer on your canvas."
+    ],
+    "tip": "💡 <strong>Pro Tip:</strong> Great for quickly adding arrows, stars, badges, and decorative accents to your flyers."
+  },
+  {
+    "cat": "Painting & Retouching",
+    "title": "Color Splash (Selective Desaturation)",
+    "desc": "Turn photos black & white while keeping specific isolated colored highlights for dramatic artistic focus.",
+    "steps_title": "Step-by-step how to use:",
+    "steps": [
+      "Select the <strong>Color Splash / Desaturate</strong> brush from the tools sidebar.",
+      "Adjust brush radius and paint over the areas you want to turn monochrome.",
+      "The rest of your subject remains in vivid original colors."
+    ],
+    "tip": "💡 <strong>Pro Tip:</strong> A classic technique for highlighting red dresses, sports cars, flowers, or product packaging against black and white backgrounds."
+  },
+  {
+    "cat": "Selection & Retouching",
+    "title": "Content-Aware Intelligent Fill",
+    "desc": "Erase unwanted objects and reconstruct seamless surrounding background textures automatically.",
+    "steps_title": "Step-by-step how to use:",
+    "steps": [
+      "Use the <strong>Lasso</strong> (<kbd>L</kbd>) to draw a close outline around the unwanted object (person, power line, watermark).",
+      "Go to <strong>Edit ➔ Content-Aware Fill</strong>.",
+      "PhotoClone samples surrounding textures and blends seamless background pixels into the selected hole!"
+    ],
+    "tip": "💡 <strong>Pro Tip:</strong> Keep your selection boundary as close to the object as possible for best blending results."
+  },
+  {
+    "cat": "Save & Export",
+    "title": "Paste from Web & Print Screen (Clipboard)",
+    "desc": "Capture screenshots (Print Screen) or copy web images and press Ctrl+V to paste them directly as layers.",
+    "steps_title": "Step-by-step how to use:",
+    "steps": [
+      "Copy any image from the web (Right-click ➔ Copy Image) or press <kbd>Print Screen</kbd> / <kbd>Win+Shift+S</kbd>.",
+      "Switch back to PhotoClone and press <kbd>Ctrl</kbd> + <kbd>V</kbd> (or <kbd>Cmd+V</kbd> on Mac).",
+      "The image is pasted immediately as a new layer positioned right at the center of your canvas!"
+    ],
+    "tip": "💡 <strong>Pro Tip:</strong> You can also copy a layer from one browser tab and paste it directly into another project tab with <kbd>Ctrl+V</kbd>."
+  },
+  {
+    "cat": "Save & Export",
+    "title": "Spritesheet Generator (Game Devs)",
+    "desc": "Export animation layer frames into a single spritesheet grid ready for Unity, Godot, or Phaser game engines.",
+    "steps_title": "Step-by-step how to use:",
+    "steps": [
+      "Organize your game character animation frames as separate layers.",
+      "Open <strong>File ➔ Export ➔ Spritesheet</strong>.",
+      "Configure column grid count, padding margins, and export format.",
+      "Download the packed spritesheet image ready for your game project."
+    ],
+    "tip": "💡 <strong>Pro Tip:</strong> Export as PNG with transparent background to retain pixel-perfect alpha for game engines."
+  },
+  {
+    "cat": "Save & Export",
+    "title": "Direct Printing & Page Margins",
+    "desc": "Print graphics with automatic page centering, scaling controls, and paper margin adjustment.",
+    "steps_title": "Step-by-step how to use:",
+    "steps": [
+      "Press <kbd>Ctrl</kbd> + <kbd>P</kbd> or go to <strong>File ➔ Print</strong>.",
+      "Select orientation (Portrait or Landscape) and scale-to-fit mode.",
+      "Preview the print layout and send directly to your local or network printer."
+    ],
+    "tip": "💡 <strong>Pro Tip:</strong> Set canvas resolution to 300 DPI when designing for crisp, professional paper printing."
+  }
+];
+		const shortcutsDataEN = [
+    [
+        "Undo",
+        "<kbd>Ctrl</kbd> + <kbd>Z</kbd>",
+        "Reverts the last action on the canvas"
+    ],
+    [
+        "Redo",
+        "<kbd>Ctrl</kbd> + <kbd>Y</kbd> or <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Z</kbd>",
+        "Redoes the previously undone action"
+    ],
+    [
+        "Export Image",
+        "<kbd>Ctrl</kbd> + <kbd>S</kbd>",
+        "Opens the export dialog for PNG, JPG, or WEBP"
+    ],
+    [
+        "WhatsApp / Social Export",
+        "<kbd>Alt</kbd> + <kbd>S</kbd>",
+        "Exports lightweight lossless image optimized for WhatsApp and Instagram"
+    ],
+    [
+        "Save Project",
+        "<kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>S</kbd>",
+        "Saves editable project as a JSON file with all layers"
+    ],
+    [
+        "Open File",
+        "<kbd>Ctrl</kbd> + <kbd>O</kbd>",
+        "Loads images or saved projects from your computer"
+    ],
+    [
+        "Duplicate Layer",
+        "<kbd>Ctrl</kbd> + <kbd>J</kbd>",
+        "Instantly duplicates the currently selected layer"
+    ],
+    [
+        "Clone on Drag",
+        "<kbd>Alt</kbd> + Drag",
+        "Duplicates layer wherever you release the mouse"
+    ],
+    [
+        "Copy Layer",
+        "<kbd>Ctrl</kbd> + <kbd>C</kbd>",
+        "Copies selected layer or active selection to clipboard"
+    ],
+    [
+        "Paste",
+        "<kbd>Ctrl</kbd> + <kbd>V</kbd>",
+        "Pastes clipboard image as a new layer"
+    ],
+    [
+        "Select All",
+        "<kbd>Ctrl</kbd> + <kbd>A</kbd>",
+        "Selects the entire document canvas area"
+    ],
+    [
+        "Move Tool (Select)",
+        "<kbd>V</kbd>",
+        "Activates the selection and movement tool"
+    ],
+    [
+        "Brush Tool",
+        "<kbd>B</kbd>",
+        "Activates the soft brush painting tool"
+    ],
+    [
+        "Eraser Tool",
+        "<kbd>E</kbd>",
+        "Activates the eraser tool"
+    ]
+];
+
+		const tutI18n = {
+			pt: {
+				badge: "Guia do Usuário",
+				btnClose: "Fechar e Voltar ao PhotoClone",
+				heroTitle: "Central de Ajuda & Tutoriais",
+				heroDesc: "Aprenda a utilizar cada ferramenta, efeito, camada e recurso de Inteligência Artificial do PhotoClone Pro com explicações práticas e passo a passo.",
+				searchPlaceholder: "Pesquisar ferramenta, efeito, atalho ou recurso... (ex: corte, fundo, camadas)",
+				searchShortcut: "<kbd>/</kbd> ou <kbd>Ctrl+K</kbd>",
+				statsAll: "Exibindo todos os tutoriais",
+				statsCount: (count, total) => `Exibindo ${count} de ${total} tutoriais`,
+				statsSingle: "Exibindo 1 tutorial encontrado",
+				activeCatPrefix: "Categoria: ",
+				catAll: "🌟 Todos",
+				catSel: "✂️ Seleção & Corte",
+				catAi: "🤖 Inteligência Artificial (IA)",
+				catLayers: "📑 Camadas",
+				catPaint: "🎨 Pintura & Desenho",
+				catShapes: "📐 Formas & Texto",
+				catEffects: "✨ Efeitos & Filtros",
+				catImage: "🖼️ Imagem & Tela",
+				catExport: "💾 Salvar & Exportar",
+				noResultsTitle: "Nenhum tutorial encontrado para a sua busca",
+				noResultsDesc: "Tente buscar por termos mais genéricos como 'camada', 'corte', 'texto', 'efeito', ou limpe a busca.",
+				btnClear: "Limpar busca e ver todos",
+				secShortcutsTitle: "⌨️ Tabela Rápida de Atalhos do Teclado",
+				thAction: "Ação",
+				thShortcut: "Atalho de Teclado",
+				thDesc: "Descrição",
+				footerText: "© 2026 PhotoClone Pro • Desenvolvido por <a href='https://4u.ia.br' target='_blank'>4U.IA.BR</a>. Todos os direitos reservados."
+			},
+			en: {
+				badge: "User Guide",
+				btnClose: "Close & Back to PhotoClone",
+				heroTitle: "Help Center & Tutorials",
+				heroDesc: "Learn how to use every tool, effect, layer, and Artificial Intelligence feature in PhotoClone Pro with practical step-by-step guides.",
+				searchPlaceholder: "Search tool, effect, shortcut or feature... (e.g. crop, background, layers)",
+				searchShortcut: "<kbd>/</kbd> or <kbd>Ctrl+K</kbd>",
+				statsAll: "Showing all tutorials",
+				statsCount: (count, total) => `Showing ${count} of ${total} tutorials`,
+				statsSingle: "Showing 1 tutorial found",
+				activeCatPrefix: "Category: ",
+				catAll: "🌟 All",
+				catSel: "✂️ Selection & Crop",
+				catAi: "🤖 Artificial Intelligence (AI)",
+				catLayers: "📑 Layers",
+				catPaint: "🎨 Paint & Draw",
+				catShapes: "📐 Shapes & Text",
+				catEffects: "✨ Effects & Filters",
+				catImage: "🖼️ Image & Canvas",
+				catExport: "💾 Save & Export",
+				noResultsTitle: "No tutorials found for your search query",
+				noResultsDesc: "Try searching for more generic keywords such as 'layer', 'crop', 'text', 'effect', or clear the search.",
+				btnClear: "Clear search and view all",
+				secShortcutsTitle: "⌨️ Keyboard Shortcuts Quick Reference",
+				thAction: "Action",
+				thShortcut: "Keyboard Shortcut",
+				thDesc: "Description",
+				footerText: "© 2026 PhotoClone Pro • Developed by <a href='https://4u.ia.br' target='_blank'>4U.IA.BR</a>. All rights reserved."
+			}
+		};
+
+		let currentLang = "pt";
+
+		function setTutorialLanguage(lang) {
+			if (!tutI18n[lang]) lang = "pt";
+			currentLang = lang;
+			localStorage.setItem("photoclone_lang", lang);
+			document.cookie = `language=${lang}; path=/; max-age=31536000`;
+
+			const btnPt = document.getElementById("tut-lang-pt");
+			const btnEn = document.getElementById("tut-lang-en");
+			if (btnPt && btnEn) {
+				if (lang === "pt") {
+					btnPt.style.background = "#3b82f6";
+					btnPt.style.color = "#ffffff";
+					btnEn.style.background = "transparent";
+					btnEn.style.color = "#94a3b8";
+				} else {
+					btnEn.style.background = "#3b82f6";
+					btnEn.style.color = "#ffffff";
+					btnPt.style.background = "transparent";
+					btnPt.style.color = "#94a3b8";
+				}
+			}
+
+			const t = tutI18n[lang];
+			if (document.getElementById("tut-badge")) document.getElementById("tut-badge").textContent = t.badge;
+			if (document.getElementById("tut-btn-close")) document.getElementById("tut-btn-close").textContent = t.btnClose;
+			if (document.getElementById("tut-hero-title")) document.getElementById("tut-hero-title").textContent = t.heroTitle;
+			if (document.getElementById("tut-hero-desc")) document.getElementById("tut-hero-desc").textContent = t.heroDesc;
+			if (document.getElementById("tutorialSearch")) document.getElementById("tutorialSearch").setAttribute("placeholder", t.searchPlaceholder);
+			const shortcutBox = document.querySelector(".search-shortcut");
+			if (shortcutBox) shortcutBox.innerHTML = t.searchShortcut;
+
+			const pills = document.querySelectorAll(".filter-pill");
+			const pillMap = {
+				all: t.catAll,
+				selecao: t.catSel,
+				ia: t.catAi,
+				camadas: t.catLayers,
+				pintura: t.catPaint,
+				formas: t.catShapes,
+				efeitos: t.catEffects,
+				ajustes: t.catImage,
+				exportar: t.catExport
+			};
+			pills.forEach(p => {
+				const cat = p.getAttribute("data-category");
+				if (pillMap[cat]) p.textContent = pillMap[cat];
+			});
+
+			// Translate all 42 Cards completely (titles, descriptions, categories, steps li, pro tips)
+			const cards = document.querySelectorAll(".tutorial-card");
+			cards.forEach((card, idx) => {
+				const titleEl = card.querySelector(".card-title");
+				const descEl = card.querySelector(".card-desc");
+				const catEl = card.querySelector(".card-category");
+				const stepsTitleEl = card.querySelector(".card-steps-title");
+				const stepsListEl = card.querySelector(".steps-list");
+				const tipEl = card.querySelector(".card-tip");
+
+				// Cache Portuguese original content once
+				if (!card.dataset.ptCached) {
+					card.dataset.ptTitle = titleEl ? titleEl.innerHTML : "";
+					card.dataset.ptDesc = descEl ? descEl.innerHTML : "";
+					card.dataset.ptCat = catEl ? catEl.innerHTML : "";
+					card.dataset.ptStepsTitle = stepsTitleEl ? stepsTitleEl.innerHTML : "";
+					card.dataset.ptStepsList = stepsListEl ? stepsListEl.innerHTML : "";
+					card.dataset.ptTip = tipEl ? tipEl.innerHTML : "";
+					card.dataset.ptCached = "1";
+				}
+
+				const en = cardsDataEN[idx];
+
+				const shortcutBadge = card.querySelector(".card-shortcut");
+				if (!card.dataset.ptBadge && shortcutBadge) {
+					card.dataset.ptBadge = shortcutBadge.innerHTML;
+				}
+
+				const enBadges = ["Tool", "V", "Automatic", "W", "L", "AI Tools", "AI Tools", "AI Tools", "Effects", "Layers", "B / P", "S", "G", "T", "Fonts", "Stock Photos", "Recent Projects", "Install PWA", "Details", "QR / PIX", "Shapes", "Presets", "Tabs", "File", "Filters", "Effects", "Effects", "Effects", "Image", "History", "Image", "Ctrl+S", "Alt + S", "4uLabs", "Animation", "Tools", "Media", "Brush", "Edit Menu", "Ctrl+V", "File", "Ctrl+P"];
+
+				if (lang === "en" && en) {
+					if (titleEl) titleEl.innerHTML = en.title;
+					if (descEl) descEl.innerHTML = en.desc;
+					if (catEl) catEl.innerHTML = en.cat;
+					if (shortcutBadge && enBadges[idx]) shortcutBadge.innerHTML = enBadges[idx];
+					if (stepsTitleEl) stepsTitleEl.innerHTML = "📋 " + en.steps_title;
+					if (stepsListEl && en.steps) {
+						stepsListEl.innerHTML = en.steps.map(s => `<li>${s}</li>`).join("");
+					}
+					if (tipEl && en.tip) tipEl.innerHTML = en.tip;
+				} else {
+					if (titleEl) titleEl.innerHTML = card.dataset.ptTitle;
+					if (descEl) descEl.innerHTML = card.dataset.ptDesc;
+					if (catEl) catEl.innerHTML = card.dataset.ptCat;
+					if (shortcutBadge) shortcutBadge.innerHTML = card.dataset.ptBadge;
+					if (stepsTitleEl) stepsTitleEl.innerHTML = card.dataset.ptStepsTitle;
+					if (stepsListEl) stepsListEl.innerHTML = card.dataset.ptStepsList;
+					if (tipEl) tipEl.innerHTML = card.dataset.ptTip;
+				}
+			});
+
+			// Translate Shortcuts Table
+			const shortcutsSec = document.getElementById("atalhos");
+			if (shortcutsSec) {
+				const h2 = shortcutsSec.querySelector("h2");
+				if (h2) h2.innerHTML = t.secShortcutsTitle;
+				const ths = shortcutsSec.querySelectorAll("thead th");
+				if (ths && ths.length === 3) {
+					ths[0].textContent = t.thAction;
+					ths[1].textContent = t.thShortcut;
+					ths[2].textContent = t.thDesc;
+				}
+				const tbody = shortcutsSec.querySelector("tbody");
+				if (tbody) {
+					if (!tbody.dataset.ptRows) {
+						tbody.dataset.ptRows = tbody.innerHTML;
+					}
+					if (lang === "en") {
+						tbody.innerHTML = shortcutsDataEN.map(r => `
+							<tr>
+								<td><strong>${r[0]}</strong></td>
+								<td>${r[1]}</td>
+								<td>${r[2]}</td>
+							</tr>
+						`).join("");
+					} else {
+						tbody.innerHTML = tbody.dataset.ptRows;
+					}
+				}
+			}
+
+			// Translate footer
+			const footerP = document.querySelector("footer p");
+			if (footerP) footerP.innerHTML = t.footerText;
+
+			// Re-apply search & count filters
+			const searchInput = document.getElementById("tutorialSearch");
+			if (searchInput) {
+				searchInput.dispatchEvent(new Event("input"));
+			}
+		}
+
+		document.addEventListener("DOMContentLoaded", () => {
+			const saved = localStorage.getItem("photoclone_lang") || "pt";
+			setTutorialLanguage(saved);
+		});
+
+		function fecharTutorial() {
+			if (window.opener && !window.opener.closed) {
+				try {
+					window.opener.focus();
+				} catch (e) {}
+			}
+			window.close();
+			// Fallback caso a aba tenha sido aberta diretamente pelo usuário
+			setTimeout(() => {
+				if (!window.closed) {
+					window.location.href = "index.php";
+				}
+			}, 150);
+		}
+</script>
+</body>
+</html>
