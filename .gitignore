@@ -1,6 +1,20 @@
-node_modules/
-.env
+# OS generated files #
+.DS_Store
+.DS_Store?
+._*
+.Trashes
+ehthumbs.db
+Thumbs.db
+nbproject/
+.idea/
+.git/
+.vscode
+/.project
 *.log
-*.sqlite
-*.db
-*.zip
+
+/node_modules/
+*.js.ignore
+
+
+.env
+deploy.sh

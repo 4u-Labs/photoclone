@@ -128,151 +128,120 @@ class AI_Tools_class {
 	show_login_modal() {
 		let _this = this;
 		var settings = {
-			title: 'Autenticação Unificada - 4uLabs',
+			title: 'Entrar com Conta Google',
+			className: 'auth-popup',
 			params: [
 				{
-					title: "Fazer Login / Cadastrar",
 					html: `
-						<div id="auth-container" style="color: #f1f5f9; font-family: sans-serif; padding: 5px;">
-							<div style="display: flex; border-bottom: 2px solid #334155; margin-bottom: 15px;">
-								<button type="button" id="tab-login" style="flex: 1; padding: 10px; background: transparent; border: none; color: #a855f7; font-weight: bold; cursor: pointer; border-bottom: 2px solid #a855f7;">Entrar</button>
-								<button type="button" id="tab-register" style="flex: 1; padding: 10px; background: transparent; border: none; color: #94a3b8; font-weight: bold; cursor: pointer;">Cadastrar</button>
-							</div>
+						<div id="auth-container" style="color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 10px 5px; text-align: center; max-width: 380px; margin: 0 auto;">
+							<div style="font-size: 42px; margin-bottom: 10px; filter: drop-shadow(0 2px 8px rgba(250, 204, 21, 0.5));">✨</div>
+							<h3 style="margin: 0 0 10px 0; font-size: 18px; font-weight: 800; color: #ffffff; letter-spacing: -0.01em;">Autenticação Unificada — 4U.IA.BR</h3>
+							<p style="margin: 0 0 22px 0; font-size: 13px; color: #e2e8f0; line-height: 1.6;">
+								Conecte sua <strong style="color: #ffffff; font-weight: 700;">Conta Google</strong> para acessar as Ferramentas de Inteligência Artificial e sincronizar seus créditos em todos os nossos aplicativos.
+							</p>
 
-							<!-- Formulário de Login -->
-							<div id="form-login">
-								<div style="margin-bottom: 12px;">
-									<label style="display: block; font-size: 11px; margin-bottom: 4px; color: #94a3b8;">E-mail</label>
-									<input type="email" id="login-email" style="width: 100%; height: 35px; background: #1e293b; border: 1px solid #475569; border-radius: 6px; padding: 0 10px; color: #fff; font-size: 13px;" placeholder="seu@email.com">
-								</div>
-								<div style="margin-bottom: 15px;">
-									<label style="display: block; font-size: 11px; margin-bottom: 4px; color: #94a3b8;">Senha</label>
-									<input type="password" id="login-password" style="width: 100%; height: 35px; background: #1e293b; border: 1px solid #475569; border-radius: 6px; padding: 0 10px; color: #fff; font-size: 13px;" placeholder="Sua senha">
-								</div>
-								<button type="button" id="btn-submit-login" style="width: 100%; height: 38px; background: linear-gradient(135deg, #a855f7, #6366f1); border: none; border-radius: 6px; color: #fff; font-weight: bold; cursor: pointer;">Entrar no Portal</button>
-							</div>
+							<!-- Botão Oficial Google Login com Alto Contraste -->
+							<button type="button" id="btn-google-login" style="width: 100%; height: 48px; background: #ffffff; border: 2px solid #e2e8f0; border-radius: 10px; color: #1e293b; font-weight: 700; font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 22px; box-shadow: 0 4px 14px rgba(0,0,0,0.4); transition: all 0.2s ease;">
+								<svg viewBox="0 0 24 24" width="22" height="22" style="flex-shrink: 0;">
+									<path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+									<path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+									<path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+									<path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+								</svg>
+								<span>Entrar com Conta Google</span>
+							</button>
 
-							<!-- Formulário de Cadastro -->
-							<div id="form-register" style="display: none;">
-								<div style="margin-bottom: 12px;">
-									<label style="display: block; font-size: 11px; margin-bottom: 4px; color: #94a3b8;">E-mail</label>
-									<input type="email" id="reg-email" style="width: 100%; height: 35px; background: #1e293b; border: 1px solid #475569; border-radius: 6px; padding: 0 10px; color: #fff; font-size: 13px;" placeholder="seu@email.com">
+							<!-- Card Informativo de Alto Contraste -->
+							<div style="background: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 14px 16px; text-align: left; font-size: 12px; color: #f1f5f9; line-height: 1.7; box-shadow: inset 0 1px 2px rgba(0,0,0,0.2);">
+								<div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; color: #38bdf8; font-weight: 700; font-size: 13px;">
+									<span>🔒</span> <span>Autenticação Oficial Google OAuth 2.0</span>
 								</div>
-								<div style="margin-bottom: 15px;">
-									<label style="display: block; font-size: 11px; margin-bottom: 4px; color: #94a3b8;">Senha (mínimo 6 dígitos)</label>
-									<input type="password" id="reg-password" style="width: 100%; height: 35px; background: #1e293b; border: 1px solid #475569; border-radius: 6px; padding: 0 10px; color: #fff; font-size: 13px;" placeholder="Crie uma senha segura">
-								</div>
-								<button type="button" id="btn-submit-register" style="width: 100%; height: 38px; background: linear-gradient(135deg, #a855f7, #6366f1); border: none; border-radius: 6px; color: #fff; font-weight: bold; cursor: pointer;">Cadastrar Conta</button>
+								<div style="color: #cbd5e1; margin-bottom: 4px;"><strong style="color: #22c55e;">✓</strong> Acesso rápido e seguro sem senhas</div>
+								<div style="color: #cbd5e1; margin-bottom: 4px;"><strong style="color: #22c55e;">✓</strong> Saldo unificado entre PhotoClone, Keep AI e DocScan</div>
+								<div style="color: #cbd5e1;"><strong style="color: #22c55e;">✓</strong> 100% seguro com proteção total de dados</div>
 							</div>
 						</div>
 					`
 				}
 			],
-			on_load: function(params) {
+			on_load: function(params, popInstance) {
 				setTimeout(() => {
-					const tabLogin = document.getElementById('tab-login');
-					const tabReg = document.getElementById('tab-register');
-					const formLogin = document.getElementById('form-login');
-					const formReg = document.getElementById('form-register');
-
-					if (tabLogin && tabReg) {
-						tabLogin.onclick = () => {
-							tabLogin.style.color = '#a855f7';
-							tabLogin.style.borderBottom = '2px solid #a855f7';
-							tabReg.style.color = '#94a3b8';
-							tabReg.style.borderBottom = 'none';
-							formLogin.style.display = 'block';
-							formReg.style.display = 'none';
-						};
-
-						tabReg.onclick = () => {
-							tabReg.style.color = '#a855f7';
-							tabReg.style.borderBottom = '2px solid #a855f7';
-							tabLogin.style.color = '#94a3b8';
-							tabLogin.style.borderBottom = 'none';
-							formReg.style.display = 'block';
-							formLogin.style.display = 'none';
-						};
+					// Oculta botões padrão de "Ok / Cancel" e força alto contraste no popup
+					const popupEl = document.querySelector('.popup') || (popInstance && popInstance.el);
+					if (popupEl) {
+						popupEl.classList.add('auth-popup');
+						popupEl.style.setProperty('background', '#0f172a', 'important');
+						popupEl.style.setProperty('background-color', '#0f172a', 'important');
+						popupEl.style.setProperty('border', '1px solid #334155', 'important');
+						popupEl.style.setProperty('border-radius', '14px', 'important');
+						popupEl.style.setProperty('box-shadow', '0 25px 65px -10px rgba(0, 0, 0, 0.95), 0 0 0 1px rgba(255, 255, 255, 0.15)', 'important');
+						const headerEl = popupEl.querySelector('h2');
+						if (headerEl) {
+							headerEl.style.setProperty('background', '#1e293b', 'important');
+							headerEl.style.setProperty('background-color', '#1e293b', 'important');
+							headerEl.style.setProperty('color', '#ffffff', 'important');
+							headerEl.style.setProperty('border-bottom', '1px solid #334155', 'important');
+						}
+						const closeBtn = popupEl.querySelector('.close');
+						if (closeBtn) {
+							closeBtn.style.setProperty('color', '#ffffff', 'important');
+							closeBtn.style.setProperty('opacity', '0.9', 'important');
+						}
+						const buttonsArea = popupEl.querySelector('.buttons');
+						if (buttonsArea) buttonsArea.style.display = 'none';
 					}
 
-					// Ações de Autenticação
-					const btnLogin = document.getElementById('btn-submit-login');
-					if (btnLogin) {
-						btnLogin.onclick = async () => {
-							const email = document.getElementById('login-email').value;
-							const password = document.getElementById('login-password').value;
-
-							if (!email || !password) {
-								alertify.error('Preencha todos os campos.');
+					// Login com Google (Google Identity Services)
+					const btnGoogle = document.getElementById('btn-google-login');
+					if (btnGoogle) {
+						btnGoogle.onclick = () => {
+							if (typeof google === 'undefined' || !google.accounts || !google.accounts.oauth2) {
+								alertify.error('Google Identity Services ainda não inicializou. Aguarde alguns instantes.');
 								return;
 							}
-
-							btnLogin.textContent = 'Autenticando...';
-							btnLogin.disabled = true;
-
-							try {
-								const resp = await fetch('../keepai/api/auth.php?action=login', {
-									method: 'POST',
-									headers: { 'Content-Type': 'application/json' },
-									body: JSON.stringify({ email, password })
-								});
-								const res = await resp.json();
-
-								if (res.success && res.token) {
-									localStorage.setItem('keepai_token', res.token);
-									alertify.success('Login efetuado com sucesso!');
-									_this.POP.hide(false);
-									_this.sync_credits();
-								} else {
-									alertify.error(res.error || 'E-mail ou senha incorretos.');
-									btnLogin.textContent = 'Entrar no Portal';
-									btnLogin.disabled = false;
+							btnGoogle.style.opacity = '0.7';
+							btnGoogle.innerHTML = '<span>Conectando com o Google...</span>';
+							const client = google.accounts.oauth2.initTokenClient({
+								client_id: '569266864432-pd09jbb5no9ekdhdr018fj643nopp817.apps.googleusercontent.com',
+								scope: 'https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email openid',
+								callback: async (response) => {
+									if (response && response.access_token) {
+										try {
+											const res = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+												headers: { Authorization: `Bearer ${response.access_token}` }
+											});
+											const googleUser = await res.json();
+											
+											const authResp = await fetch('../keepai/api/auth.php?action=google', {
+												method: 'POST',
+												headers: { 'Content-Type': 'application/json' },
+												body: JSON.stringify({
+													email: googleUser.email,
+													name: googleUser.name,
+													picture: googleUser.picture
+												})
+											});
+											const authData = await authResp.json();
+											if (authData.success && authData.token) {
+												localStorage.setItem('keepai_token', authData.token);
+												alertify.success(`Conectado como ${authData.user.display_name}!`);
+												_this.POP.hide(false);
+												_this.sync_credits();
+											} else {
+												alertify.error(authData.error || 'Erro ao autenticar com o Google.');
+												_this.show_login_modal();
+											}
+										} catch (err) {
+											console.error(err);
+											alertify.error('Falha de conexão com o servidor de autenticação.');
+											_this.show_login_modal();
+										}
+									} else {
+										_this.show_login_modal();
+									}
 								}
-							} catch (e) {
-								alertify.error('Erro de conexão com o portal.');
-								btnLogin.textContent = 'Entrar no Portal';
-								btnLogin.disabled = false;
-							}
-						};
-					}
-
-					const btnReg = document.getElementById('btn-submit-register');
-					if (btnReg) {
-						btnReg.onclick = async () => {
-							const email = document.getElementById('reg-email').value;
-							const password = document.getElementById('reg-password').value;
-
-							if (!email || !password) {
-								alertify.error('Preencha todos os campos.');
-								return;
-							}
-
-							btnReg.textContent = 'Processando...';
-							btnReg.disabled = true;
-
-							try {
-								const resp = await fetch('../keepai/api/auth.php?action=register', {
-									method: 'POST',
-									headers: { 'Content-Type': 'application/json' },
-									body: JSON.stringify({ email, password })
-								});
-								const res = await resp.json();
-
-								if (res.success && res.token) {
-									localStorage.setItem('keepai_token', res.token);
-									alertify.success('Conta criada e autenticada com sucesso!');
-									_this.POP.hide(false);
-									_this.sync_credits();
-								} else {
-									alertify.error(res.error || 'Erro ao realizar cadastro.');
-									btnReg.textContent = 'Cadastrar Conta';
-									btnReg.disabled = false;
-								}
-							} catch (e) {
-								alertify.error('Erro de conexão com o portal.');
-								btnReg.textContent = 'Cadastrar Conta';
-								btnReg.disabled = false;
-							}
+							});
+							client.requestAccessToken();
 						};
 					}
 				}, 100);

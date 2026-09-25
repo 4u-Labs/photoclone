@@ -14,7 +14,7 @@ const initialState = {
 	SNAP: true,
 	pixabay_key: '3ca2cd8af3fde33af218bea02-9021417',
 	safe_search_can_be_disabled: true,
-	google_webfonts_key: 'YOUR_GOOGLE_TRANSLATE_API_KEY_HERE',
+	google_webfonts_key: 'AIzaSyAC_Tx8RKkvN235fXCUyi_5XhSaRCzNhMg',
 	layers: [],
 	layer: null,
 	need_render: false,
@@ -59,7 +59,7 @@ const initialState = {
 		},
 		{
 			name: 'pick_color',
-			attributes: { global: false },
+			attributes: { global: true },
 		},
 		{
 			name: 'erase',
@@ -392,6 +392,7 @@ const initialState = {
 		},
 		{
 			name: 'crop',
+			on_activate: 'on_activate',
 			on_update: 'on_params_update',
 			on_leave: 'on_leave',
 			attributes: { crop: true },

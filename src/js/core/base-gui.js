@@ -18,6 +18,7 @@ import Tools_settings_class from './../modules/tools/settings.js';
 import Helper_class from './../libs/helpers.js';
 import alertify from './../../../node_modules/alertifyjs/build/alertify.min.js';
 import zoomView from './../libs/zoomView.js';
+import GUI_scroll_class from './gui/gui-scroll.js';
 
 var instance = null;
 
@@ -67,6 +68,7 @@ class Base_gui_class {
 		this.GUI_details = new GUI_details_class(this);
 		this.GUI_tabs = new GUI_tabs_class();
 		this.GUI_menu = new GUI_menu_class();
+		this.GUI_scroll = new GUI_scroll_class(this);
 		this.Tools_translate = new Tools_translate_class();
 		this.Tools_settings = new Tools_settings_class();
 		this.modules = {};
@@ -77,6 +79,7 @@ class Base_gui_class {
 		this.load_default_values();
 		this.render_main_gui();
 		this.init_service_worker();
+		this.GUI_scroll.init();
 	}
 
 	load_modules() {
@@ -178,10 +181,30 @@ class Base_gui_class {
 		}
 	}
 
+
 	init_service_worker() {
 		if ('serviceWorker' in navigator) {
+			// Limpa todos os SWs antigos e força recarga ao detectar novo SW
+			navigator.serviceWorker.getRegistrations().then(function(registrations) {
+				for (let reg of registrations) {
+					reg.addEventListener('updatefound', function() {
+						const newWorker = reg.installing;
+						newWorker.addEventListener('statechange', function() {
+							if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+								// Novo SW instalado - limpa caches e recarrega
+								caches.keys().then(function(keys) {
+									return Promise.all(keys.map(function(k) { return caches.delete(k); }));
+								}).then(function() {
+									window.location.reload();
+								});
+							}
+						});
+					});
+				}
+			});
+
 			navigator.serviceWorker.register('./service-worker.js').then(function(reg) {
-				//Successfully registered service worker
+				reg.update();
 			}).catch(function(err) {
 				console.warn('Error registering service worker', err);
 			});
@@ -258,11 +281,16 @@ class Base_gui_class {
 					clearTimeout(devClickTimer);
 					
 					let pwd = prompt('Developer Password:');
-					if (pwd === 'Fbr4g4@') {
-						localStorage.setItem('ai_credits', 9999);
-						alertify.success('Developer Bônus Ativado: Unlimited credits (9999)');
-					} else if(pwd !== null) {
-						alertify.error('Invalid password');
+					if (pwd) {
+						crypto.subtle.digest('SHA-256', new TextEncoder().encode(pwd)).then(buf => {
+							const hash = Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+							if (hash === 'c6e9a6638c3cbe09d2609d2fb42dc66b66c4298f6423167ad455daf0f62cce5b') {
+								localStorage.setItem('ai_credits', 9999);
+								alertify.success('Developer Bônus Ativado: Unlimited credits (9999)');
+							} else {
+								alertify.error('Invalid password');
+							}
+						});
 					}
 				} else {
 					clearTimeout(devClickTimer);
@@ -328,6 +356,10 @@ class Base_gui_class {
 		this.render_canvas_background('canvas_minipaint');
 
 		this.check_canvas_offset();
+
+		if (this.GUI_scroll) {
+			this.GUI_scroll.update_scrollbars();
+		}
 	}
 
 	load_saved_changes() {

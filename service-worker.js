@@ -1,7 +1,7 @@
 
 // PhotoClone Pro Service Worker for PWA Offline Support
 
-var cacheName = 'photoclone-v95:static';
+var cacheName = 'photoclone-v100:static';
 
 var staticAssets = [
 	'./',

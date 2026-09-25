@@ -6,6 +6,7 @@ import GUI_tools_class from './../core/gui/gui-tools.js';
 import Base_gui_class from './../core/base-gui.js';
 import Base_selection_class from './../core/base-selection.js';
 import alertify from './../../../node_modules/alertifyjs/build/alertify.min.js';
+import Dialog_class from './../libs/popup.js';
 
 class Crop_class extends Base_tools_class {
 
@@ -36,11 +37,26 @@ class Crop_class extends Base_tools_class {
 			},
 		};
 		this.mousedown_selection = null;
+		this.POP = new Dialog_class();
+		this.keyboard_move_start_position = null;
 		this.Base_selection = new Base_selection_class(ctx, sel_config, this.name);
+	}
+
+	on_activate() {
+		if (this.selection.width == null || this.selection.width <= 0 || this.selection.height == null || this.selection.height <= 0) {
+			this.selection = {
+				x: 0,
+				y: 0,
+				width: config.WIDTH,
+				height: config.HEIGHT,
+			};
+			config.need_render = true;
+		}
 	}
 
 	load() {
 		this.default_events();
+		this.events();
 	}
 
 	default_dragStart(event) {
@@ -48,6 +64,12 @@ class Crop_class extends Base_tools_class {
 		if (config.TOOL.name != this.name)
 			return;
 		if (!event.target.closest('#main_wrapper'))
+			return;
+		if (event.target.closest('.canvas_scrollbar'))
+			return;
+		if (event.button === 1 || event.which === 2)
+			return;
+		if (app.GUI && app.GUI.GUI_scroll && (app.GUI.GUI_scroll.is_space_pressed || app.GUI.GUI_scroll.is_panning))
 			return;
 
 		this.is_mousedown_canvas = true;
@@ -92,6 +114,10 @@ class Crop_class extends Base_tools_class {
 			return;
 		}
 
+		if (app.GUI && app.GUI.GUI_scroll && (this.type == 'move' || this.type == 'create')) {
+			app.GUI.GUI_scroll.check_edge_autoscroll(e.clientX, e.clientY);
+		}
+
 		if (this.type == 'move' && this.mousedown_selection && this.mousedown_selection.width != null) {
 			var dx = Math.round(mouse.x - mouse.click_x);
 			var dy = Math.round(mouse.y - mouse.click_y);
@@ -99,13 +125,19 @@ class Crop_class extends Base_tools_class {
 			var new_x = this.mousedown_selection.x + dx;
 			var new_y = this.mousedown_selection.y + dy;
 
-			// Mantém a área de corte dentro dos limites da imagem / tela
-			if (new_x < 0) new_x = 0;
-			if (new_y < 0) new_y = 0;
-			if (new_x + this.mousedown_selection.width > config.WIDTH) {
+			const snapDist = Math.max(8, 10 / (config.ZOOM || 1));
+
+			// Snapping magnético inteligente nas 4 extremidades
+			if (Math.abs(new_x) <= snapDist || new_x < 0) {
+				new_x = 0;
+			}
+			if (Math.abs(new_y) <= snapDist || new_y < 0) {
+				new_y = 0;
+			}
+			if (Math.abs(new_x + this.mousedown_selection.width - config.WIDTH) <= snapDist || new_x + this.mousedown_selection.width > config.WIDTH) {
 				new_x = config.WIDTH - this.mousedown_selection.width;
 			}
-			if (new_y + this.mousedown_selection.height > config.HEIGHT) {
+			if (Math.abs(new_y + this.mousedown_selection.height - config.HEIGHT) <= snapDist || new_y + this.mousedown_selection.height > config.HEIGHT) {
 				new_y = config.HEIGHT - this.mousedown_selection.height;
 			}
 
@@ -118,6 +150,22 @@ class Crop_class extends Base_tools_class {
 			var height = mouse.y - mouse.click_y;
 			var start_x = mouse.click_x;
 			var start_y = mouse.click_y;
+
+			const snapDist = Math.max(8, 10 / (config.ZOOM || 1));
+
+			// Snapping nas extremidades durante a criação
+			if (Math.abs(start_x) <= snapDist || start_x < 0) start_x = 0;
+			if (Math.abs(start_y) <= snapDist || start_y < 0) start_y = 0;
+
+			var end_x = start_x + width;
+			var end_y = start_y + height;
+			if (Math.abs(end_x - config.WIDTH) <= snapDist || end_x > config.WIDTH) end_x = config.WIDTH;
+			if (Math.abs(end_y - config.HEIGHT) <= snapDist || end_y > config.HEIGHT) end_y = config.HEIGHT;
+			if (Math.abs(end_x) <= snapDist || end_x < 0) end_x = 0;
+			if (Math.abs(end_y) <= snapDist || end_y < 0) end_y = 0;
+
+			width = end_x - start_x;
+			height = end_y - start_y;
 			
 			// SHIFT: Trava em proporção 1:1 perfeita (quadrado simétrico estilo Photoshop)
 			if (e.shiftKey == true) {
@@ -353,7 +401,152 @@ class Crop_class extends Base_tools_class {
 		);
 	}
 
+	events() {
+		document.addEventListener('keydown', (event) => {
+			if (config.TOOL.name != this.name)
+				return;
+			if (this.POP && this.POP.get_active_instances && this.POP.get_active_instances() > 0) {
+				return;
+			}
+			if (this.Helper.is_input(event.target))
+				return;
+
+			var k = event.key;
+
+			if (k == "ArrowUp") {
+				event.preventDefault();
+				this.move(0, -1, event);
+			}
+			else if (k == "ArrowDown") {
+				event.preventDefault();
+				this.move(0, 1, event);
+			}
+			else if (k == "ArrowRight") {
+				event.preventDefault();
+				this.move(1, 0, event);
+			}
+			else if (k == "ArrowLeft") {
+				event.preventDefault();
+				this.move(-1, 0, event);
+			}
+			else if (k == "Enter") {
+				event.preventDefault();
+				this.on_params_update();
+			}
+			else if (k == "Escape") {
+				event.preventDefault();
+				this.Base_selection.reset_selection();
+				this.selection.x = null;
+				this.selection.y = null;
+				this.selection.width = null;
+				this.selection.height = null;
+				config.need_render = true;
+			}
+		});
+
+		document.addEventListener('keyup', (event) => {
+			if (config.TOOL.name != this.name)
+				return;
+			if (this.POP && this.POP.get_active_instances && this.POP.get_active_instances() > 0) {
+				return;
+			}
+			if (this.Helper.is_input(event.target))
+				return;
+
+			var k = event.key;
+			if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(k)) {
+				if (this.keyboard_move_start_position) {
+					if (this.selection.width != null && (
+						this.keyboard_move_start_position.x !== this.selection.x ||
+						this.keyboard_move_start_position.y !== this.selection.y ||
+						this.keyboard_move_start_position.width !== this.selection.width ||
+						this.keyboard_move_start_position.height !== this.selection.height
+					)) {
+						app.State.do_action(
+							new app.Actions.Set_selection_action(
+								this.selection.x,
+								this.selection.y,
+								this.selection.width,
+								this.selection.height,
+								this.keyboard_move_start_position
+							)
+						);
+					}
+					this.keyboard_move_start_position = null;
+				}
+			}
+		});
+	}
+
+	move(direction_x, direction_y, event) {
+		if (config.TOOL.name != this.name)
+			return;
+		if (this.Helper.is_input(event.target))
+			return;
+
+		if (this.selection.width == null || this.selection.width <= 0 || this.selection.height == null || this.selection.height <= 0) {
+			this.selection.x = 0;
+			this.selection.y = 0;
+			this.selection.width = config.WIDTH;
+			this.selection.height = config.HEIGHT;
+		}
+
+		if (!this.keyboard_move_start_position) {
+			this.keyboard_move_start_position = JSON.parse(JSON.stringify(this.selection));
+		}
+
+		// Passo do movimento:
+		// Normal: 1px (para máxima precisão nos movimentos)
+		// Shift: 10px (deslocamento mais rápido)
+		// Ctrl / Meta: 50px
+		let step = 1;
+		if (event.shiftKey) {
+			step = 10;
+		} else if (event.ctrlKey || event.metaKey) {
+			step = 50;
+		}
+
+		if (event.altKey) {
+			// ALT + Setas: Redimensiona a área de corte com precisão pixel a pixel
+			let new_w = this.selection.width + direction_x * step;
+			let new_h = this.selection.height + direction_y * step;
+
+			if (new_w < 5) new_w = 5;
+			if (new_h < 5) new_h = 5;
+			if (this.selection.x + new_w > config.WIDTH) {
+				new_w = config.WIDTH - this.selection.x;
+			}
+			if (this.selection.y + new_h > config.HEIGHT) {
+				new_h = config.HEIGHT - this.selection.y;
+			}
+
+			this.Base_selection.set_selection(null, null, new_w, new_h);
+		} else {
+			// Setas normais: Desloca a caixa de corte mantendo o tamanho
+			let new_x = this.selection.x + direction_x * step;
+			let new_y = this.selection.y + direction_y * step;
+
+			// Mantém a área de corte dentro dos limites da imagem / tela
+			if (new_x < 0) new_x = 0;
+			if (new_y < 0) new_y = 0;
+			if (new_x + this.selection.width > config.WIDTH) {
+				new_x = config.WIDTH - this.selection.width;
+			}
+			if (new_y + this.selection.height > config.HEIGHT) {
+				new_y = config.HEIGHT - this.selection.height;
+			}
+
+			this.Base_selection.set_selection(new_x, new_y, null, null);
+		}
+
+		config.need_render = true;
+	}
+
 	on_leave() {
+		this.selection.x = null;
+		this.selection.y = null;
+		this.selection.width = null;
+		this.selection.height = null;
 		return [
 			new app.Actions.Reset_selection_action()
 		];

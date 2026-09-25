@@ -207,6 +207,9 @@ class Base_layers_class {
 
 			this.Base_gui.GUI_details.render_details();
 			this.View_ruler.render_ruler();
+			if (this.Base_gui.GUI_scroll) {
+				this.Base_gui.GUI_scroll.update_scrollbars();
+			}
 
 			if (this.render_success === false) {
 				alertify.error("Rendered with errors.");

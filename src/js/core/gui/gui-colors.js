@@ -454,6 +454,41 @@ class GUI_colors_class {
 			} else {
 				config.COLOR = newColor != null ? newColor : config.COLOR;
 				config.ALPHA = newAlpha != null ? newAlpha : config.ALPHA;
+
+				if (newColor != null) {
+					// Synchronize active tool attributes
+					if (config.TOOL && config.TOOL.attributes) {
+						if ('fill_color' in config.TOOL.attributes) {
+							config.TOOL.attributes.fill_color = newColor;
+						}
+						if ('color' in config.TOOL.attributes) {
+							config.TOOL.attributes.color = newColor;
+						}
+					}
+					// Synchronize shape tools in config.tools
+					if (config.tools) {
+						for (let i = 0; i < config.tools.length; i++) {
+							const t = config.tools[i];
+							if (t.attributes && 'fill_color' in t.attributes) {
+								t.attributes.fill_color = newColor;
+							}
+							if (t.attributes && 'color' in t.attributes) {
+								t.attributes.color = newColor;
+							}
+						}
+					}
+					// Update top toolbar action attributes if present
+					try {
+						const $fillInput = $('#action_attributes #fill_color');
+						if ($fillInput.length && typeof $fillInput.uiColorInput === 'function') {
+							$fillInput.uiColorInput('set_value', newColor);
+						}
+						const $colorAttrInput = $('#action_attributes #color');
+						if ($colorAttrInput.length && typeof $colorAttrInput.uiColorInput === 'function') {
+							$colorAttrInput.uiColorInput('set_value', newColor);
+						}
+					} catch (e) {}
+				}
 			}
 			if (hsl && !hsv) {
 				hsv = Helper.hslToHsv(hsl.h, hsl.s, hsl.l);

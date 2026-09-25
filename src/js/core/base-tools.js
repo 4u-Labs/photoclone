@@ -125,8 +125,8 @@ class Base_tools_class {
 
 		var eventType = event.type;
 
-		if (event.target.id != 'canvas_minipaint' && event.target.id != 'main_wrapper') {
-			//outside canvas
+		if ((event.target.id != 'canvas_minipaint' && event.target.id != 'main_wrapper') || (event.target.closest && event.target.closest('.canvas_scrollbar'))) {
+			//outside canvas or on scrollbar
 			this.mouse_valid = false;
 		}
 		else {
@@ -134,7 +134,7 @@ class Base_tools_class {
 		}
 
 		if (eventType === 'mousedown' || eventType === 'touchstart') {
-			if ((event.target.id != 'canvas_minipaint' && event.target.id != 'main_wrapper') || (event.which != 1 && eventType !== 'touchstart')) {
+			if ((event.target.id != 'canvas_minipaint' && event.target.id != 'main_wrapper') || (event.target.closest && event.target.closest('.canvas_scrollbar')) || (event.which != 1 && eventType !== 'touchstart')) {
 				this.mouse_click_valid = false;
 			}
 			else {
@@ -374,6 +374,10 @@ class Base_tools_class {
 
 	default_dragStart(event) {
 		if (config.TOOL.name != this.name)
+			return;
+		if (event.target.closest && event.target.closest('.canvas_scrollbar'))
+			return;
+		if (event.button === 1 || event.which === 2)
 			return;
 		this.mousedown(event);
 	}

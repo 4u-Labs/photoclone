@@ -34,6 +34,8 @@ header("Pragma: no-cache");
 	<meta property="og:description" content="PhotoClone Pro é um editor de imagens online gratuito com Inteligência Artificial. Remova fundos, colorize fotos e aumente a resolução em segundos." />
 	<meta property="og:site_name" content="PhotoClone Pro" />
 
+	<!-- Google Identity Services (OAuth 2.0 Unificado) -->
+	<script src="https://accounts.google.com/gsi/client" async defer></script>
 	<script src="dist/bundle.js?v=<?php echo time(); ?>"></script>
 	<style>
 		/* 4U.IA.BR bottom copyright */
@@ -55,6 +57,67 @@ header("Pragma: no-cache");
 		}
 		.bottom-copyright a:hover {
 			color: #a855f7;
+		}
+
+		/* Botão de Doação PayPal */
+		.photoclone-donate-btn {
+			display: inline-flex;
+			align-items: center;
+			gap: 5px;
+			background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+			border: none !important;
+			color: #ffffff !important;
+			padding: 3px 9px;
+			border-radius: 6px;
+			font-size: 11px;
+			font-weight: 700;
+			font-family: inherit;
+			text-decoration: none !important;
+			cursor: pointer;
+			transition: all 0.2s ease;
+			box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+			line-height: 1.2;
+		}
+		.photoclone-donate-btn:hover {
+			background: linear-gradient(135deg, #fbbf24 0%, #b45309 100%) !important;
+			color: #ffffff !important;
+			box-shadow: 0 0 10px rgba(245, 158, 11, 0.6);
+			transform: translateY(-1px);
+		}
+
+		/* Modal de Autenticação Google com Alto Contraste */
+		#popups .popup.auth-popup {
+			background-color: #0f172a !important;
+			background: #0f172a !important;
+			border: 1px solid #334155 !important;
+			border-radius: 14px !important;
+			box-shadow: 0 25px 65px -10px rgba(0, 0, 0, 0.95), 0 0 0 1px rgba(255, 255, 255, 0.15) !important;
+			max-width: 440px !important;
+			padding-bottom: 25px !important;
+		}
+		#popups .popup.auth-popup h2 {
+			background-color: #1e293b !important;
+			background: #1e293b !important;
+			color: #ffffff !important;
+			font-size: 15px !important;
+			font-weight: 700 !important;
+			border-bottom: 1px solid #334155 !important;
+		}
+		#popups .popup.auth-popup .close {
+			color: #ffffff !important;
+			opacity: 0.9 !important;
+		}
+		#popups .popup.auth-popup .close:hover {
+			color: #38bdf8 !important;
+			opacity: 1 !important;
+		}
+		#popups .popup.auth-popup .dialog_content {
+			padding: 15px 22px 10px 22px !important;
+			background-color: #0f172a !important;
+			background: #0f172a !important;
+		}
+		#popups .popup.auth-popup td.html_value {
+			padding: 0 !important;
 		}
 	</style>
 </head>
@@ -122,6 +185,7 @@ header("Pragma: no-cache");
 			
 			<div class="bottom-copyright">
 				© <?php echo date('Y'); ?> 4U.IA.BR &bull;
+				<a href="https://www.paypal.com/ncp/payment/L7YRCS984T33N" target="_blank" rel="noopener noreferrer" style="color: #fbbf24; font-weight: 700;" title="Apoie o PhotoClone via PayPal">☕ Apoie</a> &bull;
 				<a href="privacidade.php" target="_blank">Privacidade</a> &bull;
 				<a href="termos.php" target="_blank">Termos</a> &bull;
 				<a href="suporte.php" target="_blank">Suporte</a>

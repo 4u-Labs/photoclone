@@ -360,6 +360,12 @@ class GUI_tools_class {
 						const id = $colorInput.uiColorInput('get_id');
 						const actionData = this.action_data();
 						actionData.attributes[id] = value;
+						if (id === 'fill_color' || id === 'color') {
+							config.COLOR = value;
+							if (this.Base_gui && this.Base_gui.GUI_colors) {
+								this.Base_gui.GUI_colors.set_color({ hex: value });
+							}
+						}
 						if (actionData.on_update != undefined) {
 							//send event
 							var moduleKey = actionData.name;

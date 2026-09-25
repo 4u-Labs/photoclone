@@ -92,13 +92,12 @@ class Pick_color_class extends Base_tools_class {
 		}
 		//find color
 		var c = ctx.getImageData(mouse.x, mouse.y, 1, 1).data;
+		if (c[3] === 0) {
+			return;
+		}
 		var hex = this.Helper.rgbToHex(c[0], c[1], c[2]);
 
-		const newColorDefinition = { hex };
-		if (c[3] > 0) {
-			//set alpha
-			newColorDefinition.a = c[3];
-		}
+		const newColorDefinition = { hex, a: c[3] };
 		this.Base_gui.GUI_colors.set_color(newColorDefinition);
 	}
 

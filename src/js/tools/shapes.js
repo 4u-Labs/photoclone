@@ -59,7 +59,7 @@ class Shapes_class extends Base_tools_class {
 	get_combined_params() {
 		const myParams = this.getParams() || {};
 		const border_size = parseInt(typeof myParams.border_size === 'object' ? myParams.border_size.value : myParams.border_size) || 6;
-		const fill_color = myParams.fill_color || '#3b82f6';
+		const fill_color = myParams.fill_color || config.COLOR || '#3b82f6';
 		const border_color = myParams.border_color || '#1d4ed8';
 		const fill = typeof myParams.fill === 'boolean' ? myParams.fill : true;
 		const border = typeof myParams.border === 'boolean' ? myParams.border : true;

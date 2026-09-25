@@ -37,6 +37,8 @@ class GUI_menu_class {
 		const txtInstall = isEn ? 'Install App' : 'Instalar App';
 		const txtLogin = isEn ? 'Login' : 'Entrar';
 		const txtLoading = isEn ? 'Loading...' : 'Carregando...';
+		const txtDonate = isEn ? 'Support' : 'Apoie';
+		const titleDonate = isEn ? 'Support PhotoClone via PayPal (Voluntary Donation)' : 'Apoie o PhotoClone via PayPal (Doação Voluntária)';
 
 		menuTemplate += `
 			<li class="user-credits-menu-item" style="margin-left: auto; display: flex; align-items: center; padding-right: 15px; user-select: none; gap: 8px;">
@@ -44,6 +46,9 @@ class GUI_menu_class {
 					<button id="header-lang-pt-btn" type="button" style="padding: 2px 7px; font-size: 10px; font-weight: 800; border-radius: 4px; border: none; cursor: pointer; background: ${config.LANG === 'pt' ? '#3b82f6' : 'transparent'}; color: ${config.LANG === 'pt' ? '#ffffff' : '#94a3b8'}; transition: all 0.15s ease;" title="Português do Brasil">PT</button>
 					<button id="header-lang-en-btn" type="button" style="padding: 2px 7px; font-size: 10px; font-weight: 800; border-radius: 4px; border: none; cursor: pointer; background: ${config.LANG === 'en' ? '#3b82f6' : 'transparent'}; color: ${config.LANG === 'en' ? '#ffffff' : '#94a3b8'}; transition: all 0.15s ease;" title="English">EN</button>
 				</div>
+				<a href="https://www.paypal.com/ncp/payment/L7YRCS984T33N" target="_blank" rel="noopener noreferrer" class="photoclone-donate-btn" title="${titleDonate}">
+					<span>☕</span> <span>${txtDonate}</span>
+				</a>
 				<button id="pwa-install-header-btn" type="button" style="display: flex; align-items: center; gap: 5px; font-size: 11px; color: #38bdf8; background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.35); padding: 3px 9px; border-radius: 6px; font-weight: 700; cursor: pointer; transition: all 0.2s ease;" title="${isEn ? 'Install PhotoClone Pro on desktop or mobile' : 'Instalar PhotoClone Pro no seu computador ou celular'}">
 					<span>📲</span> <span id="pwa-install-text">${txtInstall}</span>
 				</button>

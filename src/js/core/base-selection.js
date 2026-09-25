@@ -3,6 +3,7 @@
  * author: Vilius L.
  */
 
+import app from './../app.js';
 import config from './../config.js';
 
 var instance = null;
@@ -64,6 +65,12 @@ class Base_selection_class {
 			if(this.is_touch == true)
 				return;
 			if (!e.target.closest('#main_wrapper'))
+				return;
+			if (e.target.closest('.canvas_scrollbar'))
+				return;
+			if (e.button === 1 || e.which === 2)
+				return;
+			if (app.GUI && app.GUI.GUI_scroll && (app.GUI.GUI_scroll.is_space_pressed || app.GUI.GUI_scroll.is_panning))
 				return;
 			this.is_drag = true;
 			this.selected_object_actions(e);
@@ -211,14 +218,54 @@ class Base_selection_class {
 		const wholeLineWidth = 2 / config.ZOOM;
 		const halfLineWidth = wholeLineWidth / 2;
 
+		const atLeft = !isRotated && Math.abs(x) <= 0.8;
+		const atTop = !isRotated && Math.abs(y) <= 0.8;
+		const atRight = !isRotated && Math.abs(x + w - config.WIDTH) <= 0.8;
+		const atBottom = !isRotated && Math.abs(y + h - config.HEIGHT) <= 0.8;
+
 		//borders
-		if (settings.enable_borders == true && (x != 0 || y != 0 || w != config.WIDTH || h != config.HEIGHT)) {
+		if (settings.enable_borders == true && (settings.crop_lines === true || (x != 0 || y != 0 || w != config.WIDTH || h != config.HEIGHT))) {
 			this.ctx.lineWidth = wholeLineWidth;
 			this.ctx.strokeStyle = 'rgb(255, 255, 255)';
 			this.ctx.strokeRect(x - halfLineWidth, y - halfLineWidth, w + wholeLineWidth, h + wholeLineWidth);
 			this.ctx.lineWidth = halfLineWidth;
 			this.ctx.strokeStyle = 'rgb(0, 0, 0)';
 			this.ctx.strokeRect(x - wholeLineWidth, y - wholeLineWidth, w + (wholeLineWidth * 2), h + (wholeLineWidth * 2));
+		}
+
+		// Guias luminosas de extremidade para a ferramenta de corte (Crop)
+		if (settings.crop_lines === true && !isRotated && (atLeft || atTop || atRight || atBottom)) {
+			this.ctx.save();
+			this.ctx.strokeStyle = '#00f0ff';
+			this.ctx.lineWidth = 3 / config.ZOOM;
+			this.ctx.shadowColor = 'rgba(0, 240, 255, 0.9)';
+			this.ctx.shadowBlur = 8;
+
+			if (atLeft) {
+				this.ctx.beginPath();
+				this.ctx.moveTo(x, y);
+				this.ctx.lineTo(x, y + h);
+				this.ctx.stroke();
+			}
+			if (atRight) {
+				this.ctx.beginPath();
+				this.ctx.moveTo(x + w, y);
+				this.ctx.lineTo(x + w, y + h);
+				this.ctx.stroke();
+			}
+			if (atTop) {
+				this.ctx.beginPath();
+				this.ctx.moveTo(x, y);
+				this.ctx.lineTo(x + w, y);
+				this.ctx.stroke();
+			}
+			if (atBottom) {
+				this.ctx.beginPath();
+				this.ctx.moveTo(x, y + h);
+				this.ctx.lineTo(x + w, y + h);
+				this.ctx.stroke();
+			}
+			this.ctx.restore();
 		}
 
 		// Smart Guides Drawing (Photoshop Magenta Guides)
@@ -301,15 +348,29 @@ class Base_selection_class {
 				angle = settings.data.rotate;
 			}
 
-			if (settings.enable_controls == false || angle != 0) {
+			let isSnapped = false;
+			if (settings.crop_lines === true && !isRotated) {
+				if ((drag_type & DRAG_TYPE_LEFT) && atLeft) isSnapped = true;
+				if ((drag_type & DRAG_TYPE_RIGHT) && atRight) isSnapped = true;
+				if ((drag_type & DRAG_TYPE_TOP) && atTop) isSnapped = true;
+				if ((drag_type & DRAG_TYPE_BOTTOM) && atBottom) isSnapped = true;
+			}
+
+			if (isSnapped) {
+				this.ctx.strokeStyle = "#ffffff";
+				this.ctx.fillStyle = "#00f0ff";
+				this.ctx.lineWidth = wholeLineWidth * 1.5;
+			}
+			else if (settings.enable_controls == false || angle != 0) {
 				this.ctx.strokeStyle = "rgba(0, 0, 0, 0.4)";
 				this.ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
+				this.ctx.lineWidth = wholeLineWidth;
 			}
 			else {
 				this.ctx.strokeStyle = "#000000";
 				this.ctx.fillStyle = "#ffffff";
+				this.ctx.lineWidth = wholeLineWidth;
 			}
-			this.ctx.lineWidth = wholeLineWidth;
 
 			//create path
 			const circle = new Path2D();
@@ -384,6 +445,56 @@ class Base_selection_class {
 			}
 		}
 
+		// Desenha badge HUD informativo quando limites da imagem são atingidos no recorte
+		if (settings.crop_lines === true && !isRotated && (atLeft || atTop || atRight || atBottom)) {
+			const reached = [];
+			if (atLeft) reached.push('Esquerda');
+			if (atTop) reached.push('Topo');
+			if (atRight) reached.push('Direita');
+			if (atBottom) reached.push('Base');
+
+			if (reached.length > 0) {
+				this.ctx.save();
+				const fontSize = Math.max(11, Math.round(12 / config.ZOOM));
+				this.ctx.font = `bold ${fontSize}px sans-serif`;
+				const badgeText = `✓ Limite atingido: ${reached.join(' + ')}`;
+				const textMetrics = this.ctx.measureText(badgeText);
+				const padX = 10 / config.ZOOM;
+				const padY = 5 / config.ZOOM;
+				const badgeW = textMetrics.width + padX * 2;
+				const badgeH = fontSize + padY * 2;
+
+				let badgeX = x + (w - badgeW) / 2;
+				let badgeY = atTop ? y + 14 / config.ZOOM : y - badgeH - 8 / config.ZOOM;
+				if (badgeX < 6 / config.ZOOM) badgeX = 6 / config.ZOOM;
+				if (badgeX + badgeW > config.WIDTH - 6 / config.ZOOM) badgeX = config.WIDTH - badgeW - 6 / config.ZOOM;
+
+				this.ctx.fillStyle = 'rgba(15, 23, 42, 0.92)';
+				this.ctx.strokeStyle = '#00f0ff';
+				this.ctx.lineWidth = 1.5 / config.ZOOM;
+				this.ctx.shadowColor = 'rgba(0, 240, 255, 0.5)';
+				this.ctx.shadowBlur = 6;
+
+				const r = 5 / config.ZOOM;
+				this.ctx.beginPath();
+				if (typeof this.ctx.roundRect === 'function') {
+					this.ctx.roundRect(badgeX, badgeY, badgeW, badgeH, r);
+				} else {
+					this.ctx.rect(badgeX, badgeY, badgeW, badgeH);
+				}
+				this.ctx.fill();
+				this.ctx.stroke();
+
+				this.ctx.shadowBlur = 0;
+				this.ctx.fillStyle = '#00f0ff';
+				this.ctx.textAlign = 'center';
+				this.ctx.textBaseline = 'middle';
+				this.ctx.fillText(badgeText, badgeX + badgeW / 2, badgeY + badgeH / 2);
+
+				this.ctx.restore();
+			}
+		}
+
 		//restore
 		this.ctx.restore();
 	}
@@ -417,6 +528,9 @@ class Base_selection_class {
 			return;
 
 		const mainWrapper = document.getElementById('main_wrapper');
+		if (app.GUI && app.GUI.GUI_scroll && (app.GUI.GUI_scroll.is_space_pressed || app.GUI.GUI_scroll.is_panning)) {
+			return;
+		}
 		const defaultCursor = config.TOOL && config.TOOL.name === 'text' ? 'text' : 'default';
 		if (mainWrapper.style.cursor != defaultCursor) {
 			mainWrapper.style.cursor = defaultCursor;
@@ -438,6 +552,9 @@ class Base_selection_class {
 			this.current_angle = null;
 		}
 		if (event_type == 'mousemove' && this.mouse_lock == 'selected_object_actions' && this.is_drag) {
+			if (app.GUI && app.GUI.GUI_scroll) {
+				app.GUI.GUI_scroll.check_edge_autoscroll(e.clientX, e.clientY);
+			}
 
 			const allowNegativeDimensions = settings.data.render_function
 				&& ['line', 'arrow', 'gradient'].includes(settings.data.render_function[0]);
@@ -489,18 +606,40 @@ class Base_selection_class {
 				if (is_drag_type_left)
 					width = this.click_details.width - dx;
 
-				// Keep ratio - (if drag_type power of 2, only dragging on single axis)
-				if (drag_type && (drag_type & (drag_type - 1)) !== 0 && (settings.keep_ratio == true && is_ctrl == false) 
-					|| (settings.keep_ratio !== true && (is_ctrl == true || e.shiftKey == true))){
-					var ratio = this.click_details.width / this.click_details.height;
+				const is_corner = (is_drag_type_left || is_drag_type_right) && (is_drag_type_top || is_drag_type_bottom);
+				const is_crop = settings.crop_lines === true || (config.TOOL && config.TOOL.name === 'crop');
+
+				// Keep ratio:
+				// Na ferramenta de corte (Crop), puxar pela quina mantém a proporção automaticamente!
+				// Segurar Shift inverte o comportamento para redimensionamento livre.
+				let should_keep_ratio = false;
+				if (is_corner) {
+					if (is_crop) {
+						should_keep_ratio = !e.shiftKey && !is_ctrl;
+					} else if (settings.keep_ratio == true) {
+						should_keep_ratio = !e.shiftKey && !is_ctrl;
+					} else {
+						should_keep_ratio = e.shiftKey || is_ctrl;
+					}
+				}
+
+				let origW = this.click_details.width;
+				let origH = this.click_details.height;
+				let ratio = (origW > 0 && origH > 0) ? (origW / origH) : (config.WIDTH / config.HEIGHT);
+				if (!ratio || isNaN(ratio) || ratio <= 0) ratio = 1;
+
+				if (should_keep_ratio && ratio > 0) {
 					var width_new = Math.round(height * ratio);
 					var height_new = Math.round(width / ratio);
 
-					if (Math.abs(width * 100 / width_new) > Math.abs(height * 100 / height_new)) {
-						height = height_new;
-					}
-					else {
-						width = width_new;
+					if (width_new > 0 && height_new > 0) {
+						if (Math.abs(width / width_new) > Math.abs(height / height_new)) {
+							height = Math.max(5, height_new);
+							width = Math.round(height * ratio);
+						} else {
+							width = Math.max(5, width_new);
+							height = Math.round(width / ratio);
+						}
 					}
 				}
 
@@ -532,6 +671,123 @@ class Base_selection_class {
 							settings.data.y -= settings.data.height;
 						} else {
 							settings.data.y = this.click_details.y - settings.data.height;
+						}
+					}
+				}
+
+				// Snapping magnético inteligente nas extremidades da tela / imagem para a ferramenta de corte
+				if (is_crop) {
+					const snapDist = Math.max(8, 10 / (config.ZOOM || 1));
+
+					if (should_keep_ratio && ratio > 0) {
+						const fixedRight = this.click_details.x + this.click_details.width;
+						const fixedBottom = this.click_details.y + this.click_details.height;
+
+						// Limite Esquerda
+						if (is_drag_type_left && (Math.abs(settings.data.x) <= snapDist || settings.data.x < 0)) {
+							settings.data.x = 0;
+							settings.data.width = fixedRight;
+							settings.data.height = Math.round(settings.data.width / ratio);
+							if (is_drag_type_top) {
+								settings.data.y = fixedBottom - settings.data.height;
+							}
+						}
+						// Limite Direita
+						if (is_drag_type_right) {
+							let right = settings.data.x + settings.data.width;
+							if (Math.abs(right - config.WIDTH) <= snapDist || right > config.WIDTH) {
+								settings.data.width = config.WIDTH - settings.data.x;
+								settings.data.height = Math.round(settings.data.width / ratio);
+								if (is_drag_type_top) {
+									settings.data.y = fixedBottom - settings.data.height;
+								}
+							}
+						}
+						// Limite Topo
+						if (is_drag_type_top && (Math.abs(settings.data.y) <= snapDist || settings.data.y < 0)) {
+							settings.data.y = 0;
+							settings.data.height = fixedBottom;
+							settings.data.width = Math.round(settings.data.height * ratio);
+							if (is_drag_type_left) {
+								settings.data.x = fixedRight - settings.data.width;
+							}
+						}
+						// Limite Base
+						if (is_drag_type_bottom) {
+							let bottom = settings.data.y + settings.data.height;
+							if (Math.abs(bottom - config.HEIGHT) <= snapDist || bottom > config.HEIGHT) {
+								settings.data.height = config.HEIGHT - settings.data.y;
+								settings.data.width = Math.round(settings.data.height * ratio);
+								if (is_drag_type_left) {
+									settings.data.x = fixedRight - settings.data.width;
+								}
+							}
+						}
+
+						// Clamping absoluto dentro dos limites da imagem mantendo a proporção
+						if (settings.data.x < 0) {
+							settings.data.x = 0;
+							settings.data.width = fixedRight;
+							settings.data.height = Math.round(settings.data.width / ratio);
+							if (is_drag_type_top) settings.data.y = fixedBottom - settings.data.height;
+						}
+						if (settings.data.y < 0) {
+							settings.data.y = 0;
+							settings.data.height = fixedBottom;
+							settings.data.width = Math.round(settings.data.height * ratio);
+							if (is_drag_type_left) settings.data.x = fixedRight - settings.data.width;
+						}
+						if (settings.data.x + settings.data.width > config.WIDTH) {
+							settings.data.width = config.WIDTH - settings.data.x;
+							settings.data.height = Math.round(settings.data.width / ratio);
+							if (is_drag_type_top) settings.data.y = fixedBottom - settings.data.height;
+						}
+						if (settings.data.y + settings.data.height > config.HEIGHT) {
+							settings.data.height = config.HEIGHT - settings.data.y;
+							settings.data.width = Math.round(settings.data.height * ratio);
+							if (is_drag_type_left) settings.data.x = fixedRight - settings.data.width;
+						}
+					} else {
+						// Redimensionamento livre (bordas laterais / meio ou com Shift pressionado)
+						if (is_drag_type_left) {
+							if (Math.abs(settings.data.x) <= snapDist || settings.data.x < 0) {
+								settings.data.width += settings.data.x;
+								settings.data.x = 0;
+							}
+						}
+						if (is_drag_type_top) {
+							if (Math.abs(settings.data.y) <= snapDist || settings.data.y < 0) {
+								settings.data.height += settings.data.y;
+								settings.data.y = 0;
+							}
+						}
+						if (is_drag_type_right) {
+							let right = settings.data.x + settings.data.width;
+							if (Math.abs(right - config.WIDTH) <= snapDist || right > config.WIDTH) {
+								settings.data.width = config.WIDTH - settings.data.x;
+							}
+						}
+						if (is_drag_type_bottom) {
+							let bottom = settings.data.y + settings.data.height;
+							if (Math.abs(bottom - config.HEIGHT) <= snapDist || bottom > config.HEIGHT) {
+								settings.data.height = config.HEIGHT - settings.data.y;
+							}
+						}
+
+						// Trava absoluta nos limites
+						if (settings.data.x < 0) {
+							settings.data.width += settings.data.x;
+							settings.data.x = 0;
+						}
+						if (settings.data.y < 0) {
+							settings.data.height += settings.data.y;
+							settings.data.y = 0;
+						}
+						if (settings.data.x + settings.data.width > config.WIDTH) {
+							settings.data.width = Math.max(1, config.WIDTH - settings.data.x);
+						}
+						if (settings.data.y + settings.data.height > config.HEIGHT) {
+							settings.data.height = Math.max(1, config.HEIGHT - settings.data.y);
 						}
 					}
 				}

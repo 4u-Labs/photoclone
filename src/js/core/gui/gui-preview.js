@@ -5,6 +5,7 @@
 
 import config from './../../config.js';
 import Base_layers_class from './../base-layers.js';
+import zoomView from './../../libs/zoomView.js';
 
 var instance = null;
 
@@ -109,16 +110,40 @@ class GUI_preview_class {
 			_this.zoom_auto();
 		}, false);
 		document.getElementById('main_wrapper').addEventListener('wheel', function (e) {
-			//zoom with mouse scroll
 			e.preventDefault();
-			_this.zoom_data.x = e.offsetX;
-			_this.zoom_data.y = e.offsetY;
-			var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail || -e.deltaY)));
-			if (delta > 0)
-				_this.zoom(+1, e);
-			else
-				_this.zoom(-1, e);
-		}, false);
+
+			var is_zoom_gesture = e.ctrlKey || e.metaKey || e.altKey;
+			var scaledW = config.WIDTH * config.ZOOM;
+			var scaledH = config.HEIGHT * config.ZOOM;
+			var is_scrollable = (scaledW > config.visible_width) || (scaledH > config.visible_height);
+
+			if (is_zoom_gesture || !is_scrollable) {
+				// Zoom with mouse scroll
+				_this.zoom_data.x = e.offsetX;
+				_this.zoom_data.y = e.offsetY;
+				var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail || -e.deltaY)));
+				if (delta > 0)
+					_this.zoom(+1, e);
+				else
+					_this.zoom(-1, e);
+			} else {
+				// Scroll canvas with mouse wheel / trackpad
+				var deltaX = e.deltaX || 0;
+				var deltaY = e.deltaY || 0;
+
+				// Shift key redirects vertical wheel to horizontal scroll
+				if (e.shiftKey && deltaX === 0) {
+					deltaX = deltaY;
+					deltaY = 0;
+				}
+
+				zoomView.move(-deltaX, -deltaY);
+				config.need_render = true;
+				if (_this.GUI && _this.GUI.GUI_scroll) {
+					_this.GUI.GUI_scroll.update_scrollbars();
+				}
+			}
+		}, { passive: false });
 		window.addEventListener('resize', function (e) {
 			//resize
 			config.need_render = true;
