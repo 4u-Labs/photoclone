@@ -1,0 +1,1592 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PhotoClone Pro - Editor de Imagens Online com IA</title>
+  <meta name="description" content="PhotoClone Pro: Editor profissional de imagens open-source com aceleração gráfica em WebAssembly e ferramentas de Inteligência Artificial da 4U.IA.BR.">
+  <link rel="canonical" href="https://4u.ia.br/app/photoclone/">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png?v=20261120-2">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico?v=20261120-2">
+  <link rel="apple-touch-icon" href="images/manifest/192x192.png">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#262626">
+
+  <!-- Google Identity Services (OAuth 2.0 Unificado) -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  
+  <!-- FontAwesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <script type="module">
+    import init, * as bindings from './photocraft-web-cc4585ad30ecd37f.js';
+    import { effects } from './js/effects-processor.js';
+    window.effects = effects;
+    const wasm = await init({ module_or_path: './photocraft-web-cc4585ad30ecd37f_bg.wasm' });
+    window.wasmBindings = bindings;
+    dispatchEvent(new CustomEvent("TrunkApplicationStarted", { detail: { wasm } }));
+  </script>
+
+  <style>
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0; padding: 0; width: 100%; height: 100%;
+      overflow: hidden; background: #262626; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    #photocraft_canvas {
+      position: absolute; inset: 0; width: 100%; height: 100%; display: block;
+    }
+    #photocraft_loading {
+      position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 0 16px; text-align: center; color: #b8b8b8; font: 14px system-ui, sans-serif; pointer-events: none; z-index: 10;
+    }
+    #photocraft_loading p { margin: 0 0 8px; max-width: 420px; line-height: 1.5; }
+    #photocraft_loading a { color: #e0e0e0; pointer-events: auto; }
+    #photocraft_stalled { color: #8c8c8c; visibility: hidden; animation: photocraft-stalled 0s 20s forwards; }
+    @keyframes photocraft-stalled { to { visibility: visible; } }
+
+    /* Ícone no Canto Superior Esquerdo do App (Sobreposto ao Canvas) */
+    #app-corner-icon {
+      position: fixed;
+      top: 3px;
+      left: 4px;
+      width: 22px;
+      height: 22px;
+      border-radius: 4px;
+      z-index: 95;
+      pointer-events: none;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+    }
+
+    /* Menu Bar Addons: Ferramentas IA e Ajuda perfeitamente integrados antes do Help */
+    #photoclone-menu-addons {
+      position: fixed;
+      top: 0;
+      left: 503px; /* Posicionado exatamente após 'Janela' (termina em 495px), cobrindo 100% o Help nativo */
+      height: 28px;
+      display: flex;
+      align-items: center;
+      background: #535353;
+      z-index: 100;
+      user-select: none;
+      padding-right: 4px;
+    }
+
+    /* Itens de Menu no Estilo 100% Nativo do PhotoCraft (egui) */
+    .native-menu-btn {
+      height: 24px;
+      padding: 0 7px;
+      margin: 0 1px;
+      color: #d4d4d4;
+      font-size: 12px;
+      font-weight: 400;
+      font-family: inherit;
+      background: transparent;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      outline: none;
+      transition: background 0.1s ease, color 0.1s ease;
+      white-space: nowrap;
+    }
+    .native-menu-btn:hover, .native-menu-btn.active {
+      background: #3e3e42;
+      color: #ffffff;
+    }
+
+    /* Dropdown Nativo do Menu Ferramentas IA */
+    .native-dropdown-wrapper {
+      position: relative;
+    }
+    .native-dropdown-menu {
+      position: absolute;
+      top: 26px;
+      left: 0;
+      min-width: 260px;
+      background: #1e1e1e;
+      border: 1px solid #3f3f46;
+      border-radius: 6px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(255, 255, 255, 0.05);
+      display: none;
+      flex-direction: column;
+      padding: 4px 0;
+      z-index: 1000;
+    }
+    .native-dropdown-menu.show {
+      display: flex;
+    }
+    .native-dropdown-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 14px;
+      color: #d4d4d4;
+      font-size: 12px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.1s, color 0.1s;
+    }
+    .native-dropdown-item:hover {
+      background: #2a2d2e;
+      color: #ffffff;
+    }
+    .native-dropdown-item .item-left {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+    .native-dropdown-item .item-left i {
+      width: 14px;
+      text-align: center;
+      font-size: 12px;
+    }
+    .native-dropdown-item .item-badge {
+      font-size: 10px;
+      color: #a1a1aa;
+      background: #27272a;
+      padding: 1px 6px;
+      border-radius: 4px;
+      border: 1px solid #3f3f46;
+    }
+    .native-dropdown-divider {
+      height: 1px;
+      background: #333333;
+      margin: 4px 0;
+    }
+
+    /* Barra Superior Direita (Apoiar, Instalar PWA, Login, Idioma) */
+    #photoclone-header-actions {
+      position: fixed;
+      top: 0;
+      right: 175px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #535353;
+      padding: 0 4px;
+      border-radius: 4px;
+      z-index: 100;
+      user-select: none;
+    }
+    @media (max-width: 1100px) {
+      #photoclone-header-actions {
+        right: 140px;
+        gap: 4px;
+      }
+    }
+
+    /* Dual Language Switcher [ PT ] [ EN ] */
+    .lang-switch-group {
+      display: inline-flex;
+      align-items: center;
+      background: #2b2b2b;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 4px;
+      padding: 1px;
+      height: 22px;
+      gap: 1px;
+    }
+    .lang-pill {
+      background: transparent;
+      border: none;
+      color: #a3a3a3;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 0 6px;
+      height: 18px;
+      border-radius: 3px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+      outline: none;
+    }
+    .lang-pill:hover {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.08);
+    }
+    .lang-pill.active {
+      background: #2563eb;
+      color: #ffffff;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+    }
+
+    .header-action-btn {
+      height: 22px;
+      padding: 0 8px;
+      border-radius: 4px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: #333333;
+      color: #e5e5e5;
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      text-decoration: none;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+    .header-action-btn:hover {
+      background: #444444;
+      color: #ffffff;
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    /* Botão Doar PayPal */
+    .btn-donate {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+      border-color: #f59e0b !important;
+      color: #ffffff !important;
+    }
+    .btn-donate:hover {
+      box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+    }
+
+    /* Botão PWA */
+    .btn-pwa {
+      background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
+      border-color: #10b981 !important;
+      color: #ffffff !important;
+      animation: pwaPulse 2.5s infinite;
+    }
+    @keyframes pwaPulse {
+      0%, 100% { box-shadow: 0 0 0 rgba(16, 185, 129, 0); }
+      50% { box-shadow: 0 0 10px rgba(16, 185, 129, 0.7); }
+    }
+
+    /* Badges de Créditos e Usuário */
+    .credits-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(168, 85, 247, 0.2);
+      border: 1px solid rgba(168, 85, 247, 0.5);
+      color: #c084fc;
+      padding: 0 6px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      height: 22px;
+    }
+    .credits-pill:hover {
+      background: rgba(168, 85, 247, 0.35);
+    }
+    .user-avatar-pill {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 1px solid #a855f7;
+      cursor: pointer;
+    }
+    .user-avatar-pill img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Barra Flutuante de Remoção de Cor Manual */
+    #color-remove-bar {
+      position: fixed;
+      top: 34px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1e1e1e;
+      border: 1px solid #3f3f46;
+      border-radius: 8px;
+      padding: 6px 14px;
+      display: none;
+      align-items: center;
+      gap: 12px;
+      z-index: 200;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.8);
+      font-size: 12px;
+      color: #e4e4e7;
+    }
+    #color-remove-bar.show {
+      display: flex;
+    }
+
+    /* Toasts de Notificação Rápidos */
+    #pc-toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      z-index: 99999;
+      pointer-events: none;
+    }
+    .pc-toast {
+      background: #18181b;
+      border: 1px solid #3f3f46;
+      border-radius: 8px;
+      padding: 10px 16px;
+      color: #ffffff;
+      font-size: 13px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      pointer-events: auto;
+      animation: toastIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .pc-toast.success { border-color: #10b981; }
+    .pc-toast.warning { border-color: #f59e0b; }
+    .pc-toast.error { border-color: #ef4444; }
+    .pc-toast.info { border-color: #8b5cf6; }
+    @keyframes toastIn {
+      from { transform: translateY(15px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    /* Estilos dos Modais */
+    .pc-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(4px);
+      z-index: 99999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .pc-modal-backdrop.show {
+      display: flex;
+    }
+    .pc-modal-card {
+      background: #18181b;
+      border: 1px solid #3f3f46;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 500px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9);
+      color: #f4f4f5;
+      overflow: hidden;
+      animation: modalScale 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes modalScale {
+      from { transform: scale(0.95); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    .pc-modal-header {
+      padding: 14px 18px;
+      border-bottom: 1px solid #27272a;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #202024;
+    }
+    .pc-modal-header h3 {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .pc-modal-close {
+      background: transparent;
+      border: none;
+      color: #a1a1aa;
+      font-size: 16px;
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 4px;
+    }
+    .pc-modal-close:hover {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.1);
+    }
+    .pc-modal-body {
+      padding: 18px;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    /* Redes Sociais no Help */
+    .social-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-top: 15px;
+    }
+    .social-link {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      background: #27272a;
+      border: 1px solid #3f3f46;
+      border-radius: 8px;
+      color: #ffffff;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+    .social-link:hover {
+      background: #3f3f46;
+      border-color: #a855f7;
+      transform: translateY(-2px);
+    }
+    .social-link i { font-size: 18px; }
+    .social-yt:hover i { color: #ef4444; }
+    .social-ig:hover i { color: #ec4899; }
+    .social-fb:hover i { color: #3b82f6; }
+    .social-x:hover i { color: #e2e8f0; }
+    .social-in:hover i { color: #0ea5e9; }
+    .social-gh:hover i { color: #a855f7; }
+    .social-blog:hover i { color: #10b981; }
+    .social-alt:hover i { color: #f59e0b; }
+
+    /* Pacotes PIX no Modal de Créditos */
+    .pix-pkg-card {
+      background: rgba(168, 85, 247, 0.1);
+      border: 1px solid rgba(168, 85, 247, 0.35);
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all 0.2s ease;
+    }
+    .pix-pkg-card:hover {
+      border-color: #c084fc;
+      background: rgba(168, 85, 247, 0.2);
+      transform: translateY(-1px);
+    }
+  </style>
+
+  <link rel="modulepreload" href="./photocraft-web-cc4585ad30ecd37f.js" crossorigin="anonymous">
+  <link rel="preload" href="./photocraft-web-cc4585ad30ecd37f_bg.wasm" crossorigin="anonymous" as="fetch" type="application/wasm">
+
+    <!-- 4u-Labs SEO & Standard Meta -->
+    <meta property="og:type" content="website"><meta property="og:site_name" content="4u-Labs"><meta property="og:url" content="https://4u.ia.br/app/photoclone/"><meta property="og:title" content="PhotoClone Pro - Editor de Imagens Online com IA"><meta property="og:description" content="PhotoClone Pro: Editor profissional de imagens open-source com aceleração gráfica em WebAssembly e ferramentas de Inteligência Artificial da 4U.IA.BR."><meta property="og:image" content="https://4u.ia.br/capa.webp">
+</head>
+<body>
+
+  <!-- Ícone do Canto Superior Esquerdo -->
+  <img id="app-corner-icon" src="favicon.png" alt="PhotoClone Icon">
+
+  <!-- Canvas Principal do Editor (Rust / WebGL / WGPU) -->
+  <canvas id="photocraft_canvas"></canvas>
+
+  <!-- Tela de Carregamento Inicial -->
+  <div id="photocraft_loading">
+    <div style="font-size: 26px; font-weight: 800; color: #ffffff; margin-bottom: 6px; display: flex; align-items: center; gap: 8px;">
+      <i class="fas fa-camera text-blue-400" style="color: #38bdf8;"></i> PhotoClone Pro
+    </div>
+    <p id="loading-text">Carregando editor de imagens com aceleração GPU...</p>
+    <p id="photocraft_stalled">O carregamento está demorando. <a href="" onclick="window.location.reload()">Recarregar página</a>.</p>
+  </div>
+
+  <!-- ================= MENU ADDONS (ANTES DO HELP) ================= -->
+  <div id="photoclone-menu-addons">
+    
+    <!-- Item de Menu: Ferramentas IA (com Dropdown Nativo) -->
+    <div class="native-dropdown-wrapper">
+      <button id="btn-menu-ai" class="native-menu-btn" title="Ferramentas de Inteligência Artificial e Efeitos">
+        <span id="txt-menu-ai">Ferramentas IA</span>
+      </button>
+
+      <!-- Dropdown Completo com as 13 Ferramentas -->
+      <div id="dropdown-menu-ai" class="native-dropdown-menu">
+        
+        <!-- 1. Remover Fundo (IA) -->
+        <div class="native-dropdown-item" onclick="triggerEffect('remove-bg')">
+          <div class="item-left">
+            <i class="fas fa-scissors" style="color: #34d399;"></i>
+            <span id="txt-opt-rmbg">Remover Fundo (IA)</span>
+          </div>
+          <span class="item-badge">AI</span>
+        </div>
+
+        <!-- 2. Remover Fundo por Cor (Clique) -->
+        <div class="native-dropdown-item" onclick="triggerEffect('remove-color')">
+          <div class="item-left">
+            <i class="fas fa-eye-dropper" style="color: #38bdf8;"></i>
+            <span id="txt-opt-rmcol">Remover Fundo por Cor (Clique)</span>
+          </div>
+          <span class="item-badge">Local</span>
+        </div>
+
+        <!-- 3. Colorizar (IA) -->
+        <div class="native-dropdown-item" onclick="triggerEffect('colorize')">
+          <div class="item-left">
+            <i class="fas fa-palette" style="color: #fbbf24;"></i>
+            <span id="txt-opt-col">Colorizar (IA)</span>
+          </div>
+          <span class="item-badge">AI</span>
+        </div>
+
+        <!-- 4. Upscale 2x / 4x (IA) -->
+        <div class="native-dropdown-item" onclick="triggerEffect('upscale')">
+          <div class="item-left">
+            <i class="fas fa-expand-arrows-alt" style="color: #c084fc;"></i>
+            <span id="txt-opt-up">Upscale 2x / 4x (IA)</span>
+          </div>
+          <span class="item-badge">AI</span>
+        </div>
+
+        <div class="native-dropdown-divider"></div>
+
+        <!-- 5. Enriquecer (Efeito HDR) -->
+        <div class="native-dropdown-item" onclick="triggerEffect('hdr')">
+          <div class="item-left">
+            <i class="fas fa-wand-magic-sparkles" style="color: #f43f5e;"></i>
+            <span id="txt-opt-hdr">Enriquecer (Efeito HDR)...</span>
+          </div>
+          <span class="item-badge">HDR</span>
+        </div>
+
+        <!-- 6. Preto e Branco -->
+        <div class="native-dropdown-item" onclick="triggerEffect('bw')">
+          <div class="item-left">
+            <i class="fas fa-circle-half-stroke" style="color: #e2e8f0;"></i>
+            <span id="txt-opt-bw">Preto e Branco...</span>
+          </div>
+        </div>
+
+        <!-- 7. Realce de Cores (Vibrance) -->
+        <div class="native-dropdown-item" onclick="triggerEffect('vibrance')">
+          <div class="item-left">
+            <i class="fas fa-sun" style="color: #eab308;"></i>
+            <span id="txt-opt-vib">Realce de Cores (Vibrance)...</span>
+          </div>
+        </div>
+
+        <!-- 8. Efeito Vintage / Retrô -->
+        <div class="native-dropdown-item" onclick="triggerEffect('vintage')">
+          <div class="item-left">
+            <i class="fas fa-film" style="color: #d97706;"></i>
+            <span id="txt-opt-vin">Efeito Vintage / Retrô...</span>
+          </div>
+        </div>
+
+        <!-- 9. Pintura a Óleo -->
+        <div class="native-dropdown-item" onclick="triggerEffect('oil')">
+          <div class="item-left">
+            <i class="fas fa-brush" style="color: #a855f7;"></i>
+            <span id="txt-opt-oil">Pintura a Óleo...</span>
+          </div>
+        </div>
+
+        <!-- 10. Desenho a Lápis -->
+        <div class="native-dropdown-item" onclick="triggerEffect('pencil')">
+          <div class="item-left">
+            <i class="fas fa-pencil-alt" style="color: #94a3b8;"></i>
+            <span id="txt-opt-pen">Desenho a Lápis...</span>
+          </div>
+        </div>
+
+        <!-- 11. Foco Seletivo (Tilt Shift) -->
+        <div class="native-dropdown-item" onclick="triggerEffect('tilt-shift')">
+          <div class="item-left">
+            <i class="fas fa-camera" style="color: #06b6d4;"></i>
+            <span id="txt-opt-tilt">Foco Seletivo (Tilt Shift)...</span>
+          </div>
+        </div>
+
+        <!-- 12. Efeito Vinheta -->
+        <div class="native-dropdown-item" onclick="triggerEffect('vignette')">
+          <div class="item-left">
+            <i class="fas fa-circle-dot" style="color: #64748b;"></i>
+            <span id="txt-opt-vig">Efeito Vinheta...</span>
+          </div>
+        </div>
+
+        <!-- 13. Redutor de Ruído (Denoise) -->
+        <div class="native-dropdown-item" onclick="triggerEffect('denoise')">
+          <div class="item-left">
+            <i class="fas fa-sliders" style="color: #10b981;"></i>
+            <span id="txt-opt-den">Redutor de Ruído (Denoise)...</span>
+          </div>
+        </div>
+
+        <div class="native-dropdown-divider"></div>
+
+        <!-- Recarregar Créditos IA -->
+        <div class="native-dropdown-item" onclick="openCreditsModal()">
+          <div class="item-left">
+            <i class="fas fa-bolt" style="color: #fbbf24;"></i>
+            <span id="txt-opt-pix">Recarregar Créditos IA...</span>
+          </div>
+          <span class="item-badge" style="color: #22c55e;">PIX</span>
+        </div>
+
+        <div class="native-dropdown-divider"></div>
+
+        <!-- Importar Fonte Personalizada (TTF / OTF) -->
+        <div class="native-dropdown-item" onclick="triggerCustomFontPicker()">
+          <div class="item-left">
+            <i class="fas fa-font" style="color: #38bdf8;"></i>
+            <span id="txt-opt-font">Importar Fonte (TTF/OTF)...</span>
+          </div>
+          <span class="item-badge" style="color: #38bdf8;">FONTE</span>
+        </div>
+
+      </div>
+    </div>
+    <input type="file" id="custom-font-input" accept=".ttf,.otf" style="display:none;" onchange="handleCustomFontFile(event)">
+
+    <!-- Item de Menu: Ajuda (Abre o Modal com Redes 4U e Crédito PhotoCraft) -->
+    <button id="btn-menu-help" class="native-menu-btn" onclick="openHelpModal()" title="Sobre o PhotoClone e Redes Sociais">
+      <span id="txt-menu-help">Ajuda</span>
+    </button>
+
+  </div>
+
+  <!-- ================= BARRA DE AÇÕES SUPERIOR DIREITA ================= -->
+  <div id="photoclone-header-actions">
+    
+    <!-- Botão de Apoio PayPal -->
+    <a href="https://www.paypal.com/ncp/payment/L7YRCS984T33N" target="_blank" rel="noopener noreferrer" class="header-action-btn btn-donate" title="Apoie o PhotoClone via PayPal">
+      <i class="fab fa-paypal"></i>
+      <span id="txt-donate">Apoiar</span>
+    </a>
+
+    <!-- Botão Instalar PWA -->
+    <button id="btn-pwa-install" class="header-action-btn btn-pwa" style="display: none;" title="Instalar aplicativo no computador ou celular">
+      <i class="fas fa-download"></i>
+      <span id="txt-pwa">Instalar App</span>
+    </button>
+
+    <!-- Autenticação Google / Créditos -->
+    <div id="auth-section">
+      <button id="btn-google-login" class="header-action-btn" title="Entrar com sua conta Google">
+        <i class="fab fa-google" style="color: #4285f4;"></i>
+        <span id="txt-login">Entrar</span>
+      </button>
+
+      <div id="user-logged-badge" style="display: none; align-items: center; gap: 5px;">
+        <div class="credits-pill" onclick="openCreditsModal()" title="Seus créditos de IA (clique para recarregar)">
+          <i class="fas fa-bolt"></i>
+          <span id="user-credits-val">0</span>
+          <small>cr</small>
+        </div>
+        <div class="user-avatar-pill" id="btn-user-profile" title="Clique para sair">
+          <img id="user-avatar-pic" src="" alt="User">
+        </div>
+      </div>
+    </div>
+
+    <!-- Alternador de Idioma Duplo (PT / EN) -->
+    <div class="lang-switch-group" title="Alterar Idioma / Switch Language">
+      <button type="button" id="btn-lang-pt" class="lang-pill" onclick="setLanguage('pt')">PT</button>
+      <button type="button" id="btn-lang-en" class="lang-pill" onclick="setLanguage('en')">EN</button>
+    </div>
+
+  </div>
+
+  <!-- ================= BARRA FLUTUANTE: REMOVER COR ================= -->
+  <div id="color-remove-bar">
+    <span style="font-weight: 600;"><i class="fas fa-eye-dropper" style="color: #38bdf8;"></i> <span id="txt-bar-title">Remover Cor:</span></span>
+    <input type="color" id="bar-color-val" value="#ffffff" style="width: 28px; height: 24px; border: none; cursor: pointer; border-radius: 4px;">
+    <span>Tolerância:</span>
+    <input type="range" id="bar-tolerance-val" min="5" max="100" value="40" style="width: 80px; accent-color: #38bdf8;">
+    <button class="header-action-btn" style="background: #2563eb; color: #fff; font-weight: 600;" onclick="applyColorRemovalFromBar()">
+      <span id="txt-bar-apply">Aplicar na Camada</span>
+    </button>
+    <button class="header-action-btn" onclick="closeColorBar()">&times;</button>
+  </div>
+
+  <!-- ================= TOAST CONTAINER ================= -->
+  <div id="pc-toast-container"></div>
+
+  <!-- Input Oculto para Seleção Manual caso necessário -->
+  <input type="file" id="pc-hidden-file-input" accept="image/*" style="display: none;">
+
+  <!-- ================= MODAL DE CRÉDITOS / PIX ================= -->
+  <div id="modal-credits" class="pc-modal-backdrop">
+    <div class="pc-modal-card">
+      <div class="pc-modal-header">
+        <h3>
+          <i class="fas fa-bolt" style="color: #fbbf24;"></i>
+          <span id="txt-rec-title">Créditos de IA (Mercado Pago)</span>
+        </h3>
+        <button class="pc-modal-close" onclick="closeCreditsModal()">&times;</button>
+      </div>
+      <div class="pc-modal-body">
+        
+        <p style="color: #a1a1aa; font-size: 13px; margin-top: 0; margin-bottom: 14px;" id="txt-rec-desc">
+          Seus créditos de IA são compartilhados no ecossistema 4U.IA.BR. Escolha um pacote para recarga instantânea via PIX:
+        </p>
+
+        <div id="pix-packages-list">
+          <div class="pix-pkg-card" onclick="createPixPayment(0)">
+            <div>
+              <strong style="color: #fff; font-size: 14px;">10 Créditos de IA</strong><br>
+              <span style="color: #a855f7; font-size: 11px;">Ideal para edições rápidas</span>
+            </div>
+            <strong style="color: #a855f7; font-size: 15px;">R$ 4,90</strong>
+          </div>
+          <div class="pix-pkg-card" onclick="createPixPayment(1)">
+            <div>
+              <strong style="color: #fff; font-size: 14px;">50 Créditos de IA</strong><br>
+              <span style="color: #a855f7; font-size: 11px;">Melhor custo-benefício</span>
+            </div>
+            <strong style="color: #a855f7; font-size: 15px;">R$ 19,90</strong>
+          </div>
+          <div class="pix-pkg-card" onclick="createPixPayment(2)">
+            <div>
+              <strong style="color: #fff; font-size: 14px;">100 Créditos de IA</strong><br>
+              <span style="color: #a855f7; font-size: 11px;">Para uso profissional frequente</span>
+            </div>
+            <strong style="color: #a855f7; font-size: 15px;">R$ 34,90</strong>
+          </div>
+        </div>
+
+        <div id="pix-qr-area" style="display: none; text-align: center;">
+          <h4 id="pix-pkg-label" style="margin: 0 0 10px 0; color: #c084fc;">Pacote Selecionado</h4>
+          <img id="pix-qr-img" src="" style="width: 190px; height: 190px; border-radius: 8px; border: 2px solid #a855f7; margin-bottom: 10px;" alt="QR Code PIX">
+          <div style="font-size: 11px; color: #a1a1aa; margin-bottom: 4px; text-align: left;">Chave Copia e Cola:</div>
+          <textarea id="pix-code-text" style="width: 100%; height: 55px; background: #27272a; color: #fff; border: 1px solid #3f3f46; border-radius: 6px; font-size: 11px; padding: 6px; resize: none;" readonly></textarea>
+          <button class="header-action-btn" style="width: 100%; height: 32px; justify-content: center; margin-top: 8px; background: rgba(168,85,247,0.25); border-color: #a855f7; color: #c084fc; font-weight: 700;" onclick="copyPixCode()">
+            <i class="fas fa-copy"></i> Copiar Código PIX
+          </button>
+          <p style="margin-top: 14px; font-size: 12px; color: #10b981; font-weight: 600;">
+            <i class="fas fa-spinner fa-spin"></i> Aguardando confirmação do pagamento...
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL AJUDA E REDES SOCIAIS ================= -->
+  <div id="modal-help" class="pc-modal-backdrop">
+    <div class="pc-modal-card">
+      <div class="pc-modal-header">
+        <h3>
+          <i class="fas fa-circle-question" style="color: #38bdf8;"></i>
+          <span id="txt-help-modal-title">Sobre o PhotoClone & 4U.IA.BR</span>
+        </h3>
+        <button class="pc-modal-close" onclick="closeHelpModal()">&times;</button>
+      </div>
+      <div class="pc-modal-body">
+        
+        <div style="text-align: center; margin-bottom: 16px;">
+          <img src="favicon.png" alt="PhotoClone" style="width: 56px; height: 56px; border-radius: 12px; margin-bottom: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
+          <h4 style="margin: 0; font-size: 17px; color: #ffffff;">PhotoClone Pro</h4>
+          <span style="font-size: 11px; color: #a1a1aa;" id="txt-version-tag">Versão WebAssembly 100% Offline & PWA</span>
+        </div>
+
+        <p style="font-size: 13px; color: #d4d4d8; line-height: 1.6;" id="txt-help-desc">
+          O PhotoClone Pro é uma suíte profissional de edição de imagens com camadas, máscaras, vetores e suporte a arquivos PSD reais, acelerada por GPU (WebGPU/WebGL) e integrada à IA da 4U.IA.BR.
+        </p>
+
+        <div style="background: #202024; border: 1px solid #27272a; border-radius: 8px; padding: 10px 14px; font-size: 12px; color: #a1a1aa; line-height: 1.5; margin-bottom: 16px;" id="txt-based-on">
+          💡 <strong>Ecossistema 4U.IA.BR:</strong> O maior ecossistema de web apps do Brasil. Tecnologia de ponta e soberania de dados.
+        </div>
+
+        <h5 style="margin: 0 0 10px 0; font-size: 13px; color: #e4e4e7;" id="txt-social-title">Conecte-se com a 4U.IA.BR:</h5>
+        
+        <div class="social-grid">
+          <a href="https://github.com/4u-Labs" target="_blank" rel="noopener noreferrer" class="social-link social-gh" title="GitHub (4u-Labs)">
+            <i class="fab fa-github" style="color: #c084fc;"></i>
+            <span>GitHub</span>
+          </a>
+          <a href="https://4u-labs.github.io/" target="_blank" rel="noopener noreferrer" class="social-link social-blog" title="Blog Oficial (4u-labs.github.io)">
+            <i class="fas fa-terminal" style="color: #10b981;"></i>
+            <span>Blog Dev</span>
+          </a>
+          <a href="https://alternativeto.net/user/4u-ia-br/added/" target="_blank" rel="noopener noreferrer" class="social-link social-alt" title="AlternativeTo (4U.IA.BR)">
+            <i class="fas fa-cubes" style="color: #f59e0b;"></i>
+            <span>AlternativeTo</span>
+          </a>
+          <a href="https://www.youtube.com/@fbr4g4" target="_blank" rel="noopener noreferrer" class="social-link social-yt" title="YouTube (@fbr4g4)">
+            <i class="fab fa-youtube" style="color: #ef4444;"></i>
+            <span>YouTube</span>
+          </a>
+          <a href="https://www.instagram.com/fbr4g4/" target="_blank" rel="noopener noreferrer" class="social-link social-ig" title="Instagram (@fbr4g4)">
+            <i class="fab fa-instagram" style="color: #ec4899;"></i>
+            <span>Instagram</span>
+          </a>
+          <a href="https://www.facebook.com/fbr4g4/" target="_blank" rel="noopener noreferrer" class="social-link social-fb" title="Facebook (fbr4g4)">
+            <i class="fab fa-facebook" style="color: #3b82f6;"></i>
+            <span>Facebook</span>
+          </a>
+          <a href="https://x.com/fbr4g4" target="_blank" rel="noopener noreferrer" class="social-link social-x" title="X (@fbr4g4)">
+            <i class="fab fa-x-twitter" style="color: #e2e8f0;"></i>
+            <span>X (Twitter)</span>
+          </a>
+          <a href="https://www.linkedin.com/in/fbr4g4/" target="_blank" rel="noopener noreferrer" class="social-link social-in" title="LinkedIn (Fabiano Braga)">
+            <i class="fab fa-linkedin" style="color: #0ea5e9;"></i>
+            <span>LinkedIn</span>
+          </a>
+        </div>
+
+        <div style="margin-top: 18px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+          <a href="https://4u.ia.br/loja/index.php" target="_blank" rel="noopener noreferrer" class="header-action-btn" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; font-weight: 700; padding: 6px 14px; height: 32px;">
+            <i class="fas fa-store"></i> Loja de Apps
+          </a>
+          <a href="https://4u.ia.br/suporte.html" target="_blank" rel="noopener noreferrer" class="header-action-btn" style="background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff; font-weight: 600; padding: 6px 14px; height: 32px;">
+            <i class="fas fa-headset"></i> Central de Ajuda
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- SCRIPT PRINCIPAL DO PHOTOCLONE (LÓGICA IA, GOOGLE, PWA, I18N, EFEITOS DE CAMADA) -->
+  <script>
+    // ================= SISTEMA BILINGUE (PT / EN) =================
+    const i18n = {
+      pt: {
+        loading: "Carregando editor de imagens com aceleração GPU...",
+        menuAi: "Ferramentas IA",
+        menuHelp: "Ajuda",
+        optRmbg: "Remover Fundo (IA)",
+        optRmcol: "Remover Fundo por Cor (Clique)",
+        optCol: "Colorizar (IA)",
+        optUp: "Upscale 2x / 4x (IA)",
+        optHdr: "Enriquecer (Efeito HDR)...",
+        optBw: "Preto e Branco...",
+        optVib: "Realce de Cores (Vibrance)...",
+        optVin: "Efeito Vintage / Retrô...",
+        optOil: "Pintura a Óleo...",
+        optPen: "Desenho a Lápis...",
+        optTilt: "Foco Seletivo (Tilt Shift)...",
+        optVig: "Efeito Vinheta...",
+        optDen: "Redutor de Ruído (Denoise)...",
+        optPix: "Recarregar Créditos IA...",
+        optFont: "Importar Fonte (TTF / OTF)...",
+        donate: "Doar",
+        pwa: "Instalar App",
+        login: "Entrar",
+        help: "Ajuda",
+        recTitle: "Créditos de IA (Mercado Pago)",
+        recDesc: "Seus créditos de IA são compartilhados no ecossistema 4U.IA.BR. Escolha um pacote para recarga instantânea via PIX:",
+        helpModalTitle: "Sobre o PhotoClone & 4U.IA.BR",
+        versionTag: "Versão WebAssembly 100% Offline & PWA",
+        helpDesc: "O PhotoClone Pro é uma suíte profissional de edição de imagens com camadas, máscaras, vetores e suporte a arquivos PSD reais, acelerada por GPU (WebGPU/WebGL) e integrada à IA da 4U.IA.BR.",
+        basedOn: "💡 <strong>Ecossistema 4U.IA.BR:</strong> O maior ecossistema de web apps do Brasil. Tecnologia de ponta e soberania de dados.",
+        socialTitle: "Conecte-se com a 4U.IA.BR:",
+        noImageDetected: "⚠️ Nenhuma camada com imagem aberta detectada. Abra ou arraste uma foto no PhotoClone primeiro.",
+        applyingEffect: "✨ Aplicando efeito na camada aberta...",
+        effectSuccess: "✓ Efeito aplicado à camada com sucesso!",
+        effectError: "Erro ao processar efeito:",
+        insufficientCredits: "Saldo de IA insuficiente. Por favor, recarregue seus créditos.",
+        loginRequired: "Por favor, faça login com sua conta Google para usar as ferramentas de IA."
+      },
+      en: {
+        loading: "Loading GPU-accelerated image editor...",
+        menuAi: "AI Tools",
+        menuHelp: "Help",
+        optRmbg: "Remove Background (AI)",
+        optRmcol: "Remove Background by Color",
+        optCol: "Colorize (AI)",
+        optUp: "Upscale 2x / 4x (AI)",
+        optHdr: "Enrich (HDR Effect)...",
+        optBw: "Black and White...",
+        optVib: "Color Vibrance...",
+        optVin: "Vintage / Retro Effect...",
+        optOil: "Oil Painting...",
+        optPen: "Pencil Sketch...",
+        optTilt: "Tilt Shift Focus...",
+        optVig: "Vignette Effect...",
+        optDen: "Noise Reduction (Denoise)...",
+        optPix: "Recharge AI Credits...",
+        optFont: "Import Custom Font (TTF / OTF)...",
+        donate: "Donate",
+        pwa: "Install App",
+        login: "Sign In",
+        help: "Help",
+        recTitle: "AI Credits (Mercado Pago)",
+        recDesc: "Your AI credits are shared across the 4U.IA.BR ecosystem. Choose a credit pack for instant PIX top-up:",
+        helpModalTitle: "About PhotoClone & 4U.IA.BR",
+        versionTag: "WebAssembly 100% Offline & PWA Edition",
+        helpDesc: "PhotoClone Pro is a professional image editing suite with layers, masks, vectors and native PSD support, GPU accelerated (WebGPU/WebGL) and connected to 4U.IA.BR AI services.",
+        basedOn: "💡 <strong>4U.IA.BR Ecosystem:</strong> Brazil's premier web apps ecosystem. Cutting-edge technology and data sovereignty.",
+        socialTitle: "Connect with 4U.IA.BR:",
+        noImageDetected: "⚠️ No open image layer detected. Please open or drop a photo into PhotoClone first.",
+        applyingEffect: "✨ Applying effect to the active layer...",
+        effectSuccess: "✓ Effect successfully applied to layer!",
+        effectError: "Error processing effect:",
+        insufficientCredits: "Insufficient AI credits. Please recharge your credits.",
+        loginRequired: "Please sign in with Google to use AI tools."
+      }
+    };
+
+    let userStoredLang = localStorage.getItem('app_user_lang');
+    let currentLang = userStoredLang || (((navigator.language || navigator.userLanguage || 'pt').toLowerCase().startsWith('pt')) ? 'pt' : 'en');
+
+    // Garantir que as preferências do WASM comecem no idioma correto
+    try {
+      let prefs = JSON.parse(localStorage.getItem('photocraft.preferences') || '{}');
+      if (!prefs.interface) prefs.interface = {};
+      prefs.interface.language = currentLang === 'pt' ? 'pt-br' : 'en';
+      localStorage.setItem('photocraft.preferences', JSON.stringify(prefs));
+    } catch(e) {}
+
+    function applyLanguage(lang) {
+      currentLang = lang;
+      const dict = i18n[lang];
+      document.getElementById('loading-text').textContent = dict.loading;
+      document.getElementById('txt-menu-ai').textContent = dict.menuAi;
+      document.getElementById('txt-menu-help').textContent = dict.menuHelp;
+      document.getElementById('txt-opt-rmbg').textContent = dict.optRmbg;
+      document.getElementById('txt-opt-rmcol').textContent = dict.optRmcol;
+      document.getElementById('txt-opt-col').textContent = dict.optCol;
+      document.getElementById('txt-opt-up').textContent = dict.optUp;
+      document.getElementById('txt-opt-hdr').textContent = dict.optHdr;
+      document.getElementById('txt-opt-bw').textContent = dict.optBw;
+      document.getElementById('txt-opt-vib').textContent = dict.optVib;
+      document.getElementById('txt-opt-vin').textContent = dict.optVin;
+      document.getElementById('txt-opt-oil').textContent = dict.optOil;
+      document.getElementById('txt-opt-pen').textContent = dict.optPen;
+      document.getElementById('txt-opt-tilt').textContent = dict.optTilt;
+      document.getElementById('txt-opt-vig').textContent = dict.optVig;
+      document.getElementById('txt-opt-den').textContent = dict.optDen;
+      document.getElementById('txt-opt-pix').textContent = dict.optPix;
+      if (document.getElementById('txt-opt-font')) document.getElementById('txt-opt-font').textContent = dict.optFont;
+      document.getElementById('txt-donate').textContent = dict.donate;
+      document.getElementById('txt-pwa').textContent = dict.pwa;
+      document.getElementById('txt-login').textContent = dict.login;
+      document.getElementById('txt-rec-title').textContent = dict.recTitle;
+      document.getElementById('txt-rec-desc').textContent = dict.recDesc;
+      document.getElementById('txt-help-modal-title').textContent = dict.helpModalTitle;
+      document.getElementById('txt-version-tag').textContent = dict.versionTag;
+      document.getElementById('txt-help-desc').innerHTML = dict.helpDesc;
+      document.getElementById('txt-based-on').innerHTML = dict.basedOn;
+      document.getElementById('txt-social-title').textContent = dict.socialTitle;
+      
+      const btnPt = document.getElementById('btn-lang-pt');
+      const btnEn = document.getElementById('btn-lang-en');
+      if (btnPt && btnEn) {
+        if (lang === 'pt') {
+          btnPt.classList.add('active');
+          btnEn.classList.remove('active');
+        } else {
+          btnEn.classList.add('active');
+          btnPt.classList.remove('active');
+        }
+      }
+
+      const menuAddons = document.getElementById('photoclone-menu-addons');
+      if (menuAddons) {
+        menuAddons.style.left = lang === 'pt' ? '503px' : '400px';
+      }
+    }
+
+    window.setLanguage = function(targetLang) {
+      const normalized = targetLang.startsWith('pt') ? 'pt' : 'en';
+      if (currentLang === normalized) return;
+      localStorage.setItem('app_user_lang', normalized);
+      try {
+        let prefs = JSON.parse(localStorage.getItem('photocraft.preferences') || '{}');
+        if (!prefs.interface) prefs.interface = {};
+        prefs.interface.language = normalized === 'pt' ? 'pt-br' : 'en';
+        localStorage.setItem('photocraft.preferences', JSON.stringify(prefs));
+      } catch(e) {}
+      window.location.reload();
+    };
+
+    applyLanguage(currentLang);
+
+    // ================= FONTES PERSONALIZADAS =================
+    window.triggerCustomFontPicker = function() {
+      const input = document.getElementById('custom-font-input');
+      if (input) input.click();
+    };
+
+    window.handleCustomFontFile = async function(e) {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      showToast(currentLang === 'pt' ? `Instalando fonte "${file.name}"...` : `Installing font "${file.name}"...`, 'info');
+      try {
+        const formData = new FormData();
+        formData.append('font', file);
+        const res = await fetch('upload-font.php', { method: 'POST', body: formData });
+        const json = await res.json();
+        if (json.success) {
+          showToast(currentLang === 'pt' ? `Fonte "${json.family}" instalada com sucesso! Atualizando catálogo...` : `Font "${json.family}" installed successfully! Updating catalog...`, 'success');
+          setTimeout(() => { window.location.reload(); }, 1200);
+        } else {
+          showToast((currentLang === 'pt' ? 'Erro ao instalar fonte: ' : 'Error installing font: ') + (json.error || 'Erro desconhecido'), 'error');
+        }
+      } catch(err) {
+        showToast((currentLang === 'pt' ? 'Erro no envio da fonte: ' : 'Error uploading font: ') + err.message, 'error');
+      }
+      e.target.value = '';
+    };
+
+    // ================= TOAST NOTIFIER =================
+    function showToast(message, type = 'info', actionBtn = null) {
+      const container = document.getElementById('pc-toast-container');
+      const toast = document.createElement('div');
+      toast.className = `pc-toast ${type}`;
+      
+      const iconMap = {
+        success: 'fa-check-circle text-emerald-400',
+        warning: 'fa-triangle-exclamation text-amber-400',
+        error: 'fa-circle-xmark text-rose-400',
+        info: 'fa-circle-info text-blue-400'
+      };
+      
+      toast.innerHTML = `<i class="fas ${iconMap[type] || 'fa-circle-info'}"></i> <span>${message}</span>`;
+      
+      if (actionBtn) {
+        toast.appendChild(actionBtn);
+      }
+
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+      }, 5000);
+    }
+
+    // ================= RASTREADOR DE CAMADA ATIVA =================
+    // Intercepta arquivos abertos via FileReader, Drop ou Paste para saber sempre qual a imagem aberta
+    window.currentActiveLayerBlob = null;
+    window.currentActiveLayerDataUrl = null;
+    window.currentActiveLayerName = 'camada.png';
+
+    const _origReadAsArrayBuffer = FileReader.prototype.readAsArrayBuffer;
+    FileReader.prototype.readAsArrayBuffer = function(blob) {
+      if (blob && (blob.type?.startsWith('image/') || blob.name?.match(/\.(png|jpe?g|webp|bmp|gif)$/i))) {
+        window.currentActiveLayerBlob = blob;
+        window.currentActiveLayerName = blob.name || 'camada.png';
+        const r = new FileReader();
+        r.onload = (e) => {
+          window.currentActiveLayerDataUrl = e.target.result;
+        };
+        r.readAsDataURL(blob);
+      }
+      return _origReadAsArrayBuffer.apply(this, arguments);
+    };
+
+    window.addEventListener('drop', (e) => {
+      if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]) {
+        const f = e.dataTransfer.files[0];
+        if (f.type.startsWith('image/') || f.name.match(/\.(png|jpe?g|webp|bmp|gif)$/i)) {
+          window.currentActiveLayerBlob = f;
+          window.currentActiveLayerName = f.name;
+          const r = new FileReader();
+          r.onload = (ev) => {
+            window.currentActiveLayerDataUrl = ev.target.result;
+          };
+          r.readAsDataURL(f);
+        }
+      }
+    }, true);
+
+    window.addEventListener('paste', (e) => {
+      if (e.clipboardData && e.clipboardData.files && e.clipboardData.files[0]) {
+        const f = e.clipboardData.files[0];
+        if (f.type.startsWith('image/')) {
+          window.currentActiveLayerBlob = f;
+          window.currentActiveLayerName = 'camada_colada.png';
+          const r = new FileReader();
+          r.onload = (ev) => {
+            window.currentActiveLayerDataUrl = ev.target.result;
+          };
+          r.readAsDataURL(f);
+        }
+      }
+    }, true);
+
+    if (navigator.clipboard && navigator.clipboard.write) {
+      const _origClipWrite = navigator.clipboard.write.bind(navigator.clipboard);
+      navigator.clipboard.write = async function(items) {
+        for (const item of items) {
+          for (const type of item.types) {
+            if (type.startsWith('image/')) {
+              try {
+                const blob = await item.getType(type);
+                window.currentActiveLayerBlob = blob;
+                window.currentActiveLayerName = 'camada_copiada.png';
+                const r = new FileReader();
+                r.onload = (ev) => {
+                  window.currentActiveLayerDataUrl = ev.target.result;
+                };
+                r.readAsDataURL(blob);
+              } catch (err) {}
+            }
+          }
+        }
+        return _origClipWrite(items);
+      };
+    }
+
+    // ================= INJEÇÃO DE RESULTADO NO PHOTOCLONE =================
+    async function injectLayerIntoPhotocraft(dataUrl, filename = 'camada_processada.png') {
+      try {
+        const res = await fetch(dataUrl);
+        const blob = await res.blob();
+        const file = new File([blob], filename, { type: 'image/png', lastModified: Date.now() });
+
+        // Atualiza referência em memória
+        window.currentActiveLayerBlob = file;
+        window.currentActiveLayerDataUrl = dataUrl;
+        window.currentActiveLayerName = filename;
+
+        const canvas = document.getElementById('photocraft_canvas');
+        const dt = new DataTransfer();
+        dt.items.add(file);
+
+        // Despacha eventos Drag & Drop para o WASM/eframe importar
+        const dragEnter = new DragEvent('dragenter', { bubbles: true, cancelable: true, dataTransfer: dt });
+        const dragOver = new DragEvent('dragover', { bubbles: true, cancelable: true, dataTransfer: dt });
+        const dropEv = new DragEvent('drop', { bubbles: true, cancelable: true, dataTransfer: dt });
+
+        canvas.dispatchEvent(dragEnter);
+        canvas.dispatchEvent(dragOver);
+        canvas.dispatchEvent(dropEv);
+
+        // Botão de download rápido no toast
+        const btnDownload = document.createElement('button');
+        btnDownload.className = 'header-action-btn';
+        btnDownload.style.marginLeft = '8px';
+        btnDownload.style.background = '#27272a';
+        btnDownload.innerHTML = '<i class="fas fa-download"></i> Baixar';
+        btnDownload.onclick = () => {
+          const a = document.createElement('a');
+          a.href = dataUrl;
+          a.download = filename;
+          a.click();
+        };
+
+        showToast(i18n[currentLang].effectSuccess, 'success', btnDownload);
+      } catch (err) {
+        console.error('Erro ao injetar camada no PhotoCraft:', err);
+        showToast(i18n[currentLang].effectError + ' ' + err.message, 'error');
+      }
+    }
+
+    // ================= DISPARO E PROCESSAMENTO DOS EFEITOS =================
+    const menuBtnAi = document.getElementById('btn-menu-ai');
+    const menuDropdownAi = document.getElementById('dropdown-menu-ai');
+
+    menuBtnAi.addEventListener('click', (e) => {
+      e.stopPropagation();
+      menuDropdownAi.classList.toggle('show');
+      menuBtnAi.classList.toggle('active');
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!menuDropdownAi.contains(e.target) && !menuBtnAi.contains(e.target)) {
+        menuDropdownAi.classList.remove('show');
+        menuBtnAi.classList.remove('active');
+      }
+    });
+
+    async function triggerEffect(effectKey) {
+      menuDropdownAi.classList.remove('show');
+      menuBtnAi.classList.remove('active');
+
+      // Se for modo de remover por cor, abre a barra superior com conta-gotas
+      if (effectKey === 'remove-color') {
+        document.getElementById('color-remove-bar').classList.add('show');
+        return;
+      }
+
+      // Verifica se temos imagem da camada ativa
+      let source = window.currentActiveLayerDataUrl;
+
+      // Se não estiver em cache, tenta ler do clipboard
+      if (!source && navigator.clipboard && navigator.clipboard.read) {
+        try {
+          const items = await navigator.clipboard.read();
+          for (const item of items) {
+            for (const type of item.types) {
+              if (type.startsWith('image/')) {
+                const blob = await item.getType(type);
+                source = await new Promise(r => {
+                  const fr = new FileReader();
+                  fr.onload = e => r(e.target.result);
+                  fr.readAsDataURL(blob);
+                });
+                window.currentActiveLayerDataUrl = source;
+                window.currentActiveLayerBlob = blob;
+                break;
+              }
+            }
+            if (source) break;
+          }
+        } catch (e) {}
+      }
+
+      // Se ainda não houver imagem detectada, abre o seletor com aviso
+      if (!source) {
+        showToast(i18n[currentLang].noImageDetected, 'warning');
+        promptUserForLayerFile(effectKey);
+        return;
+      }
+
+      await executeEffect(effectKey, source);
+    }
+
+    // Executa o efeito escolhido na imagem da camada ativa
+    async function executeEffect(effectKey, source) {
+      showToast(i18n[currentLang].applyingEffect, 'info');
+
+      try {
+        let resultUrl = null;
+        const filename = (window.currentActiveLayerName || 'camada').replace(/\.[^/.]+$/, "") + '_' + effectKey + '.png';
+
+        // FERRAMENTAS DE IA (BACKEND COM CRÉDITOS)
+        if (['remove-bg', 'colorize', 'upscale'].includes(effectKey)) {
+          const token = localStorage.getItem('keepai_token');
+          if (!token) {
+            showToast(i18n[currentLang].loginRequired, 'warning');
+            handleGoogleLogin();
+            return;
+          }
+          if (userCredits < 1) {
+            showToast(i18n[currentLang].insufficientCredits, 'warning');
+            openCreditsModal();
+            return;
+          }
+
+          if (effectKey === 'remove-bg') {
+            const res = await window.effects.removeBgAI(source, token);
+            resultUrl = res.output;
+            if (res.credits_remaining !== undefined) userCredits = res.credits_remaining;
+          } else if (effectKey === 'colorize') {
+            const res = await window.effects.colorizeAI(source, token);
+            resultUrl = res.output;
+            if (res.credits_remaining !== undefined) userCredits = res.credits_remaining;
+          } else if (effectKey === 'upscale') {
+            const res = await window.effects.upscaleAI(source, token, 4);
+            resultUrl = res.output;
+            if (res.credits_remaining !== undefined) userCredits = res.credits_remaining;
+          }
+          updateAuthUI(currentUser);
+        }
+
+        // EFEITOS E FILTROS CLIENTE (CANVAS 2D / WEBGL INSTANTÂNEO)
+        else {
+          switch (effectKey) {
+            case 'hdr':
+              resultUrl = await window.effects.applyHDR(source);
+              break;
+            case 'bw':
+              resultUrl = await window.effects.applyBlackAndWhite(source);
+              break;
+            case 'vibrance':
+              resultUrl = await window.effects.applyVibrance(source, 0.5);
+              break;
+            case 'vintage':
+              resultUrl = await window.effects.applyVintage(source);
+              break;
+            case 'oil':
+              resultUrl = await window.effects.applyOilPainting(source, 3);
+              break;
+            case 'pencil':
+              resultUrl = await window.effects.applyPencilSketch(source);
+              break;
+            case 'tilt-shift':
+              resultUrl = await window.effects.applyTiltShift(source);
+              break;
+            case 'vignette':
+              resultUrl = await window.effects.applyVignette(source, 0.65);
+              break;
+            case 'denoise':
+              resultUrl = await window.effects.applyDenoise(source);
+              break;
+          }
+        }
+
+        if (resultUrl) {
+          await injectLayerIntoPhotocraft(resultUrl, filename);
+        }
+      } catch (err) {
+        console.error('Erro ao executar efeito:', err);
+        showToast(i18n[currentLang].effectError + ' ' + err.message, 'error');
+      }
+    }
+
+    // Caso a camada ainda não esteja carregada no DOM, abre seletor amigável
+    function promptUserForLayerFile(effectKey) {
+      const input = document.getElementById('pc-hidden-file-input');
+      input.onchange = (e) => {
+        if (e.target.files && e.target.files[0]) {
+          const file = e.target.files[0];
+          window.currentActiveLayerBlob = file;
+          window.currentActiveLayerName = file.name;
+          const r = new FileReader();
+          r.onload = async (ev) => {
+            window.currentActiveLayerDataUrl = ev.target.result;
+            // Primeiro abre no editor
+            await injectLayerIntoPhotocraft(ev.target.result, file.name);
+            // Depois executa o efeito solicitado
+            setTimeout(() => {
+              executeEffect(effectKey, ev.target.result);
+            }, 600);
+          };
+          r.readAsDataURL(file);
+        }
+      };
+      input.click();
+    }
+
+    // Aplicação da remoção de cor manual
+    async function applyColorRemovalFromBar() {
+      const hex = document.getElementById('bar-color-val').value;
+      const tol = parseInt(document.getElementById('bar-tolerance-val').value, 10) || 40;
+      const r = parseInt(hex.slice(1, 3), 16);
+      const g = parseInt(hex.slice(3, 5), 16);
+      const b = parseInt(hex.slice(5, 7), 16);
+
+      let source = window.currentActiveLayerDataUrl;
+      if (!source) {
+        showToast(i18n[currentLang].noImageDetected, 'warning');
+        promptUserForLayerFile('remove-color');
+        return;
+      }
+
+      showToast(i18n[currentLang].applyingEffect, 'info');
+      try {
+        const resultUrl = await window.effects.removeColor(source, { r, g, b }, tol);
+        closeColorBar();
+        await injectLayerIntoPhotocraft(resultUrl, 'camada_transparente.png');
+      } catch (err) {
+        showToast(i18n[currentLang].effectError + ' ' + err.message, 'error');
+      }
+    }
+
+    function closeColorBar() {
+      document.getElementById('color-remove-bar').classList.remove('show');
+    }
+
+    // ================= SUPORTE A PWA INSTALÁVEL =================
+    let deferredInstallPrompt = null;
+    const pwaBtn = document.getElementById('btn-pwa-install');
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredInstallPrompt = e;
+      if (pwaBtn) pwaBtn.style.display = 'inline-flex';
+    });
+
+    if (pwaBtn) {
+      pwaBtn.addEventListener('click', async () => {
+        if (!deferredInstallPrompt) return;
+        deferredInstallPrompt.prompt();
+        const choice = await deferredInstallPrompt.userChoice;
+        if (choice.outcome === 'accepted') {
+          pwaBtn.style.display = 'none';
+        }
+        deferredInstallPrompt = null;
+      });
+    }
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('service-worker.js?v=1.0.1').then(reg => {
+          reg.update();
+        }).catch(err => console.warn('PWA SW error:', err));
+      });
+    }
+
+    // ================= CONTROLE DOS MODAIS =================
+    function openHelpModal() {
+      document.getElementById('modal-help').classList.add('show');
+    }
+    function closeHelpModal() {
+      document.getElementById('modal-help').classList.remove('show');
+    }
+
+    function openCreditsModal() {
+      if (!localStorage.getItem('keepai_token')) {
+        handleGoogleLogin();
+        return;
+      }
+      document.getElementById('modal-credits').classList.add('show');
+      document.getElementById('pix-packages-list').style.display = 'block';
+      document.getElementById('pix-qr-area').style.display = 'none';
+    }
+    function closeCreditsModal() {
+      document.getElementById('modal-credits').classList.remove('show');
+      if (window.pixPollInterval) {
+        clearInterval(window.pixPollInterval);
+        window.pixPollInterval = null;
+      }
+    }
+
+    // ================= SISTEMA DE AUTENTICAÇÃO GOOGLE =================
+    let currentUser = null;
+    let userCredits = 0;
+
+    async function syncUserData() {
+      const token = localStorage.getItem('keepai_token');
+      if (!token) {
+        updateAuthUI(null);
+        return;
+      }
+      try {
+        const res = await fetch('../keepai/api/auth.php', {
+          headers: { 'Authorization': 'Bearer ' + token }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && data.user) {
+            currentUser = data.user;
+            userCredits = parseInt(data.user.credits || 0);
+            updateAuthUI(currentUser);
+          } else {
+            localStorage.removeItem('keepai_token');
+            updateAuthUI(null);
+          }
+        }
+      } catch (e) {
+        console.warn('Erro ao sincronizar usuário:', e);
+      }
+    }
+
+    function updateAuthUI(user) {
+      const loginBtn = document.getElementById('btn-google-login');
+      const loggedBadge = document.getElementById('user-logged-badge');
+      const creditsVal = document.getElementById('user-credits-val');
+      const avatarPic = document.getElementById('user-avatar-pic');
+
+      if (user) {
+        loginBtn.style.display = 'none';
+        loggedBadge.style.display = 'flex';
+        creditsVal.textContent = userCredits;
+        avatarPic.src = user.photo_url || user.picture || 'favicon.png';
+      } else {
+        loginBtn.style.display = 'inline-flex';
+        loggedBadge.style.display = 'none';
+      }
+    }
+
+    function handleGoogleLogin() {
+      if (typeof google === 'undefined' || !google.accounts || !google.accounts.oauth2) {
+        alert(currentLang === 'pt' ? 'Serviço do Google carregando, aguarde alguns instantes...' : 'Google service loading, please wait...');
+        return;
+      }
+
+      const client = google.accounts.oauth2.initTokenClient({
+        client_id: '569266864432-pd09jbb5no9ekdhdr018fj643nopp817.apps.googleusercontent.com',
+        scope: 'https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email openid',
+        callback: async (tokenResponse) => {
+          if (tokenResponse && tokenResponse.access_token) {
+            try {
+              const res = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+                headers: { 'Authorization': `Bearer ${tokenResponse.access_token}` }
+              });
+              const googleUser = await res.json();
+              
+              const authResp = await fetch('../keepai/api/auth.php?action=google', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  access_token: tokenResponse.access_token,
+                  email: googleUser.email,
+                  name: googleUser.name,
+                  picture: googleUser.picture
+                })
+              });
+              const authData = await authResp.json();
+              if (authData.token) {
+                localStorage.setItem('keepai_token', authData.token);
+                syncUserData();
+                showToast(currentLang === 'pt' ? 'Conectado com sucesso!' : 'Signed in successfully!', 'success');
+              } else {
+                alert(authData.error || 'Erro ao autenticar');
+              }
+            } catch (err) {
+              console.error(err);
+              alert('Falha na autenticação com Google.');
+            }
+          }
+        }
+      });
+      client.requestAccessToken();
+    }
+
+    document.getElementById('btn-google-login').addEventListener('click', handleGoogleLogin);
+    document.getElementById('btn-user-profile').addEventListener('click', () => {
+      if (confirm(currentLang === 'pt' ? 'Deseja sair da sua conta?' : 'Do you want to sign out?')) {
+        localStorage.removeItem('keepai_token');
+        currentUser = null;
+        updateAuthUI(null);
+      }
+    });
+
+    syncUserData();
+
+    // ================= RECARGA PIX (MERCADO PAGO) =================
+    async function createPixPayment(packageIndex) {
+      const token = localStorage.getItem('keepai_token');
+      if (!token) return;
+
+      const packagesList = document.getElementById('pix-packages-list');
+      const qrArea = document.getElementById('pix-qr-area');
+      packagesList.style.display = 'none';
+      qrArea.style.display = 'block';
+
+      try {
+        const resp = await fetch('../keepai/api/mp_create.php', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token
+          },
+          body: JSON.stringify({ package_index: packageIndex })
+        });
+        const data = await resp.json();
+
+        if (data.qr_code_base64) {
+          document.getElementById('pix-pkg-label').textContent = `${data.label} (R$ ${data.amount_brl.toFixed(2)})`;
+          document.getElementById('pix-qr-img').src = 'data:image/jpeg;base64,' + data.qr_code_base64;
+          document.getElementById('pix-code-text').value = data.qr_code;
+
+          const startCr = userCredits;
+          if (window.pixPollInterval) clearInterval(window.pixPollInterval);
+          window.pixPollInterval = setInterval(async () => {
+            try {
+              const chk = await fetch('../keepai/api/credits.php', {
+                headers: { 'Authorization': 'Bearer ' + token }
+              });
+              if (chk.ok) {
+                const cData = await chk.json();
+                if (cData.credits > startCr) {
+                  clearInterval(window.pixPollInterval);
+                  userCredits = cData.credits;
+                  updateAuthUI(currentUser);
+                  showToast(currentLang === 'pt' ? 'Recarga confirmada! Créditos adicionados.' : 'Payment confirmed! Credits added.', 'success');
+                  closeCreditsModal();
+                }
+              }
+            } catch (e) {}
+          }, 3000);
+        } else {
+          alert('Erro ao gerar PIX: ' + (data.error || 'Tente novamente'));
+          packagesList.style.display = 'block';
+          qrArea.style.display = 'none';
+        }
+      } catch (err) {
+        alert('Erro de conexão ao gerar PIX');
+        packagesList.style.display = 'block';
+        qrArea.style.display = 'none';
+      }
+    }
+
+    function copyPixCode() {
+      const codeArea = document.getElementById('pix-code-text');
+      codeArea.select();
+      document.execCommand('copy');
+      showToast(currentLang === 'pt' ? 'Chave PIX copiada!' : 'PIX code copied!', 'success');
+    }
+  </script>
+</body>
+</html>
